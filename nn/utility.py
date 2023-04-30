@@ -148,6 +148,7 @@ def load_network(model_file_path: str, use_gpu: bool) -> DualNet:
     """
     device = get_torch_device(use_gpu=use_gpu)
     network = DualNet(device)
+    print(f'Setting network to device: {device}')
     network.to(device)
     try:
         network.load_state_dict(torch.load(model_file_path))
