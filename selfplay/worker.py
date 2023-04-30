@@ -41,7 +41,8 @@ def selfplay_worker(save_dir: str, model_file_path: str, index_list: List[int], 
 
     max_moves = (board.get_board_size() ** 2) * 2
 
-    for index in index_list:
+    for i, index in enumerate(index_list):
+        print(f'Doing {i+1}/{len(index_list)}...')
         if os.path.isfile(os.path.join(save_dir, f"{index}.sgf")):
             continue
         copy_board(board, init_board)
