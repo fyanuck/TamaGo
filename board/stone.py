@@ -1,9 +1,9 @@
-"""交点の状態（色）の定数と処理定義。
+"""constants and handling definitions for intersection states (colors).
 """
 from enum import Enum
 
 class Stone(Enum):
-    """石の色を表すクラス。
+    """Class that represents the color of the stone.
     """
     EMPTY = 0
     BLACK = 1
@@ -12,13 +12,13 @@ class Stone(Enum):
 
     @classmethod
     def get_opponent_color(cls, color):
-        """相手の手番の色を取得する。
+        """Get the color of the opponent's turn.
 
         Args:
-            color (Stone): 手番の色。
+            color (Stone): The color of the turn.
 
         Returns:
-            Stone: 相手の色。
+            Stone: Opponent's color.
         """
         if color == Stone.BLACK:
             return Stone.WHITE
@@ -30,13 +30,13 @@ class Stone(Enum):
 
     @classmethod
     def get_char(cls, color) -> str:
-        """色に対応する文字を取得する。
+        """Get the character corresponding to the color.
 
         Args:
-            color (Stone): 色。
+            color (Stone): Колір камня
 
         Returns:
-            str: 色に対応する文字。
+            str: the character corresponding to the color.
         """
         if color == Stone.EMPTY:
             return '+'

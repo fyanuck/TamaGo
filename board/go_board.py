@@ -1,4 +1,4 @@
-"""碁盤のデータ定義と操作処理。
+"""Go board data definition and operation processing.
 """
 from typing import List, NoReturn
 from collections import deque
@@ -15,26 +15,26 @@ from common.print_console import print_err
 
 
 class GoBoard: # pylint: disable=R0902
-    """碁盤クラス
+    """Go board class
     """
     def __init__(self, board_size: int, komi: float=7.0, check_superko: bool=False):
-        """碁盤クラスの初期化
+        """Go board class initialization
 
         Args:
-            board_size (int): 碁盤の大きさ。
-            komi (float): コミの値。デフォルト値は7.0。
-            check_superko (bool): 超劫の判定有効化。デフォルト値はFalse。
+            board_size (int): Go board size.
+            komi (float): Komi value. Default value is 7.0.
+            check_superko (bool): enable superko judgment. Default value is False.
         """
         self.board_size = board_size
         self.board_size_with_ob = board_size + OB_SIZE * 2
         self.komi = komi
 
         def pos(x_coord: int, y_coord: int) -> int:
-            """(x, y)座標を1次元配列のインデックスに変換する。
+            """Converts (x, y) coordinates to indices in a one-dimensional array.
 
             Args:
-                x_coord (int): X座標。
-                y_coord (int): Y座標。
+                x_coord (int): X coordinate
+                y_coord (int): Y coordinate
 
             Returns:
                 int: _description_
@@ -42,18 +42,18 @@ class GoBoard: # pylint: disable=R0902
             return x_coord + y_coord * self.board_size_with_ob
 
         def get_neighbor4(pos: int) -> List[int]:
-            """指定した座標の上下左右の座標を取得する。
+            """Gets the top, bottom, left, and right coordinates of the specified coordinates.
 
             Args:
-                pos (int): 基準となる座標。
+                pos (int): Reference coordinates.
 
             Returns:
-                List[int]: 上下左右の座標列。
+                List[int]: Top, bottom, left, and right coordinate columns.
             """
             return [pos - self.board_size_with_ob, pos - 1, pos + 1, pos + self.board_size_with_ob]
 
         def get_cross4(pos: int) -> List[int]:
-            """指定した座標の斜め方向の座標を取得する。
+            """Gets the diagonal coordinates of the specified coordinates.
             """
             return [pos - self.board_size_with_ob - 1, pos - self.board_size_with_ob + 1, \
                 pos + self.board_size_with_ob - 1, pos + self.board_size_with_ob + 1]
@@ -107,7 +107,7 @@ class GoBoard: # pylint: disable=R0902
 
 
     def clear(self) -> NoReturn:
-        """盤面の初期化
+        """board initialization
         """
         self.moves = 1
         self.position_hash = 0
@@ -129,11 +129,11 @@ class GoBoard: # pylint: disable=R0902
         self.record.clear()
 
     def put_stone(self, pos: int, color: Stone) -> NoReturn:
-        """指定された座標に指定された色の石を石を置く。
+        """Place a stone of the specified color at the specified coordinates.
 
         Args:
-            pos (int): 石を置く座標。
-            color (Stone): 置く石の色。
+            pos (int): coordinates to place the stone.
+            color (Stone): Color of the stone to be placed.
         """
         if pos == PASS:
             self.record.save(self.moves, color, pos, self.positional_hash)
@@ -186,15 +186,16 @@ class GoBoard: # pylint: disable=R0902
         self.moves += 1
 
     def _is_suicide(self, pos: int, color: Stone) -> bool:
-        """自殺手か否かを判定する。
-        自殺手ならTrue、そうでなければFalseを返す。
+        """Determine whether or not it is a suicidal move.
+        Returns True if suicidal, False otherwise.
+
 
         Args:
-            pos (int): 確認する座標。
-            color (Stone): 着手する石の色。
+            pos (int): the coordinates to check.
+            color (Stone): The color of the stone to start with.
 
         Returns:
-            bool: 自殺手の判定結果。自殺手ならTrue、そうでなければFalse。
+            bool: Suicidal judgment result. True if suicidal, False otherwise.
         """
         other = Stone.get_opponent_color(color)
 
@@ -209,8 +210,8 @@ class GoBoard: # pylint: disable=R0902
         return True
 
     def is_legal(self, pos: int, color: Stone) -> bool:
-        """合法手か否かを判定する。
-        合法手ならTrue、そうでなければFalseを返す。
+        """Determine whether the move is legal or not.
+        Returns True if the move is legal, False otherwise.
 
         Args:
             pos (int): 確認する座標。
@@ -349,18 +350,18 @@ class GoBoard: # pylint: disable=R0902
 
 
     def get_all_legal_pos(self, color: Stone) -> List[int]:
-        """全ての合法手の座標を取得する。ただし眼は除く。
+        """Get the coordinates of all legal moves, except the eye.
 
         Args:
             color (Stone): 手番の色
 
         Returns:
-            list[int]: 合法手の座標列。
+            list[int]: coordinate sequence of legal moves.
         """
         return [pos for pos in self.onboard_pos if self.is_legal(pos, color)]
 
     def display(self, sym: int=0) -> NoReturn:
-        """盤面を表示する。
+        """Display the board.
         """
         board_string = f"Move : {self.moves}\n"
         board_string += f"Prisoner(Black) : {self.prisoner[0]}\n"
@@ -387,10 +388,10 @@ class GoBoard: # pylint: disable=R0902
 
 
     def display_self_atari(self, color: Stone) -> NoReturn:
-        """アタリに突っ込んだ時に取られる石の数を表示する。取られない場合は0。デバッグ用。
+        """Displays the number of stones taken when thrusting into Atari.If not taken, 0. For debugging.
 
         Args:
-            color (Stone): 手番の色。
+            color (Stone): The color of the turn.
         """
         self_atari_string = ""
         for i, pos in enumerate(self.onboard_pos):
@@ -404,7 +405,7 @@ class GoBoard: # pylint: disable=R0902
         print_err(self_atari_string)
 
     def get_board_size(self) -> NoReturn:
-        """碁盤の大きさを取得する。
+        """Gets the size of the Go board.
 
         Returns:
             int: 碁盤の大きさ
@@ -412,13 +413,13 @@ class GoBoard: # pylint: disable=R0902
         return self.board_size
 
     def get_board_data(self, sym: int) -> List[int]:
-        """ニューラルネットワークの入力用の碁盤情報を取得する。
+        """Get board information for neural network input.
 
         Args:
-            sym (int): 対称形の番号。
+            sym (int): symmetry number.
 
         Returns:
-            list[int]: 空点は0, 黒石は1, 白石は2のリスト。
+            list[int]: ist with 0 for empty, 1 for black and 2 for white.
         """
         return [self.board[self.get_symmetrical_coordinate(pos, sym)].value \
             for pos in self.onboard_pos]
@@ -443,7 +444,7 @@ class GoBoard: # pylint: disable=R0902
             for pos in self.onboard_pos]
 
     def get_symmetrical_coordinate(self, pos: int, sym: int) -> int:
-        """8対称のいずれかの座標を取得する。
+        """Get the coordinates of one of the 8 symmetry.
 
         Args:
             pos (int): 元の座標。
@@ -471,10 +472,10 @@ class GoBoard: # pylint: disable=R0902
         return self.komi
 
     def count_score(self) -> int: # pylint: disable=R0912
-        """領地を簡易的にカウントする。
+        """Territory is simply counted.
 
         Returns:
-            int: 黒から見た領地の数（コミは考慮しない)。
+            int: number of provinces as seen from black (komi not taken into account).
         """
         board = self.board[:]
 
@@ -521,11 +522,11 @@ class GoBoard: # pylint: disable=R0902
 
 
 def copy_board(dst: GoBoard, src: GoBoard):
-    """盤面の情報をコピーする。
+    """Copy board information.
 
     Args:
-        dst (GoBoard): コピー先の盤面情報のデータ。
-        src (GoBoard): コピー元の盤面情報のデータ。
+        dst (GoBoard): Copy destination board information data.
+        src (GoBoard): Copy source board information data.
     """
     dst.board = src.board[:]
     copy_pattern(dst.pattern, src.pattern)

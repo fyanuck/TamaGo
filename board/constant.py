@@ -1,22 +1,22 @@
-"""碁盤に関する定数
+"""Go board constants
 """
-# 碁盤のサイズ
+# Go board size
 BOARD_SIZE = 9
-# 盤外のサイズ
+# size outside the board
 OB_SIZE = 1
-# 連の最大数
+# maximum number of runs
 STRING_MAX = int(0.8 * BOARD_SIZE * (BOARD_SIZE - 1) + 5)
-# 隣接する連の最大数
+# maximum number of adjacent runs
 NEIGHBOR_MAX = STRING_MAX
-# 連を構成する石の最大数
+# Maximum number of stones that make up a run
 STRING_POS_MAX = (BOARD_SIZE + OB_SIZE * 2) ** 2
-# 呼吸点の最大数
+# maximum number of breathing points
 STRING_LIB_MAX = (BOARD_SIZE + OB_SIZE * 2) ** 2
-# 連を構成する石の座標の番兵
+# Stone Coordinate limit
 STRING_END = STRING_POS_MAX - 1
-# 呼吸点の番兵
+# Liberty point limit
 LIBERTY_END = STRING_LIB_MAX - 1
-# 隣接する敵連の番兵
+# Adjacent enemy limits=
 NEIGHBOR_END = NEIGHBOR_MAX - 1
 
 # 着手に関する定数
@@ -24,8 +24,8 @@ NEIGHBOR_END = NEIGHBOR_MAX - 1
 PASS = 0
 # 投了に対応する座標
 RESIGN = -1
-# Go Text ProtocolのX座標の文字
+# Go Text Protocol X-coordinate character
 GTP_X_COORDINATE = 'IABCDEFGHJKLMNOPQRSTUVWXYZ'
 
-# 着手履歴の最大数
+# maximum number of moves history
 MAX_RECORDS = (BOARD_SIZE ** 2) * 3

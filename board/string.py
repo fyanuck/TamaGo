@@ -1,4 +1,4 @@
-"""連の定義と処理の実装。
+"""Implementation of stanza definition and processing.
 """
 from typing import Callable, List, NoReturn
 from board.constant import STRING_END, LIBERTY_END, NEIGHBOR_END, OB_SIZE
@@ -248,7 +248,7 @@ class String: # pylint: disable=R0902
 
 
 class StringData:
-    """碁盤上の全ての連を管理するクラス
+    """Class that manages all runs on the Go board
     """
     def __init__(self, board_size: int, pos_func: Callable[[int, int], int], \
         get_neighbor4: Callable[[int], List[int]]):

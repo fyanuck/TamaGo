@@ -1,13 +1,13 @@
-"""プログラム内部形式とGTP形式の座標変換処理。
+"""Program internal format and GTP format coordinate conversion processing.
 """
 from board.constant import PASS, RESIGN, OB_SIZE, GTP_X_COORDINATE
 
 
 class Coordinate:
-    """座標変換処理クラス
+    """Coordinate transformation processing class
     """
     def __init__(self, board_size: int):
-        """座標変換処理の初期化。
+        """Initialization of coordinate transformation processing.
 
         Args:
             board_size (int): 碁盤の大きさ。
@@ -17,13 +17,13 @@ class Coordinate:
         self.sgf_format = "abcdefghijklmnopqrstuvwxyz"
 
     def convert_from_gtp_format(self, pos: str) -> int:
-        """GTP形式の座標からプログラム内部表現の座標に変換する。
+        """Convert from coordinates in GTP format to coordinates in the internal representation of the program.
 
         Args:
-            pos (str): Go Text Protocol形式の座標。
+            pos (str): Go Text Protocol format
 
         Returns:
-            int: プログラム内部表現の座標。
+            int: Coordinates in the internal representation of the program.
         """
         if pos.upper() == "PASS":
             return PASS
@@ -43,13 +43,13 @@ class Coordinate:
         return pos
 
     def convert_to_gtp_format(self, pos: int) -> str:
-        """プログラム内部の座標からGTP形式に変換する。
+        """Convert from internal coordinates to GTP format.
 
         Args:
-            pos (int): プログラム内部表現の座標。
+            pos (int): coordinates in the internal representation of the program.
 
         Returns:
-            str: Go Text Protocol形式の座標。
+            str: Go Text Protocol format
         """
         if pos == PASS:
             return "PASS"
@@ -63,13 +63,13 @@ class Coordinate:
         return GTP_X_COORDINATE[x_coord] + str(y_coord)
 
     def convert_to_sgf_format(self, pos: int) -> str:
-        """プログラム内部の座標からSGF形式の座標に変換する。
+        """Convert from coordinates in the program to coordinates in SGF format.
 
         Args:
-            pos (int): プログラム内部表現の座標。
+            pos (int): coordinates in the internal representation of the program.
 
         Returns:
-            str: SGF形式の座標。
+            str: coordinate in SGF format
         """
         if pos == PASS:
             return "tt"

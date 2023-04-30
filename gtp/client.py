@@ -1,4 +1,4 @@
-"""Go Text Protocolクライアントの実装。
+"""Імплементація клієнта Go Text Protocol
 """
 import os
 import random
