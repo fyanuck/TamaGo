@@ -1,4 +1,4 @@
-"""自己対戦実行ワーカの実装。
+"""Implementation of a self-matching execution worker.
 """
 import os
 import random
@@ -19,15 +19,15 @@ import torch
 # pylint: disable=R0913,R0914
 def selfplay_worker(save_dir: str, model_file_path: str, index_list: List[int], \
     size: int, visits: int, use_gpu: bool):
-    """自己対戦実行ワーカ。
+    """Self match execution worker.
 
     Args:
-        save_dir (str): 棋譜ファイルを保存するディレクトリパス。
-        model_file_path (str): 使用するニューラルネットワークモデルファイルパス。
-        index_list (List[int]): 棋譜ファイル保存時に使用するインデックスリスト。
-        size (int): 碁盤の大きさ。
-        visits (int): 自己対戦実行時の探索回数。
-        use_gpu (bool): GPU使用フラグ。
+        save_dir (str): Directory path to save game record files.
+        model_file_path (str): Neural network model file path to use.
+        index_list (List[int]): Index list to use when saving the game record file.
+        size (int): Go board size.
+        visits (int): Number of visits during self-play.
+        use_gpu (bool): GPU usage flag.
     """
     board = GoBoard(board_size=size, komi=7.0, check_superko=True)
     init_board = GoBoard(board_size=size, komi=7.0, check_superko=True)

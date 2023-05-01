@@ -1,4 +1,4 @@
-"""深層学習に関するユーティリティ。
+"""Deep learning utilities.
 """
 from typing import NoReturn, Dict, List, Tuple
 import time
@@ -10,13 +10,13 @@ from nn.network.dual_net import DualNet
 
 
 def get_torch_device(use_gpu: bool) -> torch.device:
-    """torch.deviceを取得する。
+    """to get torch.device.
 
     Args:
-        use_gpu (bool): GPU使用フラグ。
+        use_gpu (bool): GPU usage flag.
 
     Returns:
-        torch.device: デバイス情報。
+        torch.device: device information.
     """
     if use_gpu:
         torch.cuda.set_device(0)
@@ -26,11 +26,11 @@ def get_torch_device(use_gpu: bool) -> torch.device:
 
 def _calculate_losses(loss: Dict[str, float], iteration: int) \
     -> Tuple[float, float, float]:
-    """各種損失関数値を算出する。
+    """Calculate various loss function values.
 
     Args:
-        loss (Dict[str, float]): 損失関数値の情報。
-        iteration (int): イテレーション数。
+        loss (Dict[str, float]): Loss function value information.
+        iteration (int): number of iterations.
 
     Returns:
         Tuple[float, float, float]: Total loss, Policy loss, Value loss。
@@ -42,14 +42,14 @@ def _calculate_losses(loss: Dict[str, float], iteration: int) \
 
 def print_learning_process(loss_data: Dict[str, float], epoch: int, index: int, \
     iteration: int, start_time: float) -> NoReturn:
-    """学習経過情報を表示する。
+    """Display learning progress information.
 
     Args:
-        loss_data (Dict[str]): 損失関数値の情報。
-        epoch (int): 学習エポック数。
-        index (int): データセットインデックス。
-        iteration (int): バッチサイズの学習イテレーション数。
-        start_time (float): 学習開始時間。
+        loss_data (Dict[str]): Information of loss function value.
+        epoch (int): Number of training epochs.
+        index (int): dataset index.
+        iteration (int): number of training iterations for the batch size.
+        start_time (float): Learning start time.
     """
     loss, policy_loss, value_loss = _calculate_losses(loss_data, iteration)
     training_time = time.time() - start_time
@@ -61,13 +61,13 @@ def print_learning_process(loss_data: Dict[str, float], epoch: int, index: int, 
 
 def print_evaluation_information(loss_data: Dict[str, float], epoch: int, \
     iteration: int, start_time: float) -> NoReturn:
-    """テストデータの評価情報を表示する。
+    """Display evaluation information for test data.
 
     Args:
-        loss_data (Dict[str, float]): 損失関数値の情報。
-        epoch (int): 学習エポック数。
-        iteration (int): テストイテレーション数。
-        start_time (float): 評価開始時間。
+        loss_data (Dict[str, float]): Loss function value information.
+        epoch (int): Number of training epochs.
+        iteration (int): Number of test iterations.
+        start_time (float): Evaluation start time.
     """
     loss, policy_loss, value_loss = _calculate_losses(loss_data, iteration)
     testing_time = time.time() - start_time
@@ -78,23 +78,23 @@ def print_evaluation_information(loss_data: Dict[str, float], epoch: int, \
 
 
 def save_model(network: torch.nn.Module, path: str) -> NoReturn:
-    """ニューラルネットワークのパラメータを保存する。
+    """Saves neural network parameters.
 
     Args:
-        network (torch.nnModel): ニューラルネットワークのモデル。
-        path (str): パラメータファイルパス。
+        network (torch.nnModel): Neural network model.
+        path (str): Parameter file path.
     """
     torch.save(network.to("cpu").state_dict(), path)
 
 
 def load_data_set(path: str) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """学習データセットを読み込む。
+    """Load the training data set.
 
     Args:
-        path (str): データセットのファイルパス。
+        path (str): file path of the dataset.
 
     Returns:
-        Tuple[np.ndarray, np.ndarray, np.ndarray]: 入力データ、Policy、Value。
+        Tuple[np.ndarray, np.ndarray, np.ndarray]: Input data, Policy, Value.
     """
     data = np.load(path)
     perm = np.random.permutation(len(data["value"]))
@@ -104,14 +104,14 @@ def load_data_set(path: str) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
 
 def split_train_test_set(file_list: List[str], train_data_ratio: float) \
     -> Tuple[List[str], List[str]]:
-    """学習に使用するデータと検証に使用するデータファイルを分割する。
+    """Separate the data file used for training and the data file used for validation.
 
     Args:
-        file_list (List[str]): 学習に使用するnpzファイルリスト。
-        train_data_ratio (float): 学習に使用するデータの割合。
+        file_list (List[str]): npz file list to use for training.
+        train_data_ratio (float): Ratio of data to use for training.
 
     Returns:
-        Tuple[List[str], List[str]]: 学習データセットと検証データセット。
+        Tuple[List[str], List[str]]: training and validation datasets.
     """
     train_data_set = file_list[:int(len(file_list) * train_data_ratio)]
     test_data_set = file_list[int(len(file_list) * train_data_ratio):]
@@ -123,13 +123,13 @@ def split_train_test_set(file_list: List[str], train_data_ratio: float) \
 
 
 def apply_softmax(logits: np.array) -> np.array:
-    """Softmax関数を適用する。
+    """Apply the Softmax function.
 
     Args:
-        logits (np.array): Softmax関数の入力値。
+        logits (np.array): Input values ​​for the Softmax function.
 
     Returns:
-        np.array: Softmax関数適用後の値。
+        np.array: Values ​​after applying the Softmax function.
     """
     shift_exp = np.exp(logits - np.max(logits))
 
@@ -137,11 +137,11 @@ def apply_softmax(logits: np.array) -> np.array:
 
 
 def load_network(model_file_path: str, use_gpu: bool) -> DualNet:
-    """ニューラルネットワークをロードして取得する。
+    """Load and get the neural network.
 
     Args:
-        model_file_path (str): ニューラルネットワークのパラメータファイルパス。
-        use_gpu (bool): GPU使用フラグ。
+        model_file_path (str): Neural network parameter file path.
+        use_gpu (bool): GPU usage flag.
 
     Returns:
         DualNet: パラメータロード済みのニューラルネットワーク。

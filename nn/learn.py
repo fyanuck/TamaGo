@@ -1,4 +1,4 @@
-"""深層学習の実装。
+"""A deep learning implementation.
 """
 from typing import NoReturn
 import glob
@@ -20,20 +20,20 @@ from learning_param import SL_LEARNING_RATE, RL_LEARNING_RATE, \
 
 def train_on_cpu(program_dir: str, board_size: int, batch_size: \
     int, epochs: int) -> NoReturn: # pylint: disable=R0914,R0915
-    """教師あり学習を実行し、学習したモデルを保存する。
+    """Perform supervised learning and save the learned model.
 
     Args:
-        program_dir (str): プログラムのワーキングディレクトリ。
-        board_size (int): 碁盤の大きさ。
-        batch_size (int): ミニバッチサイズ。
-        epochs (int): 実行する最大エポック数。
+        program_dir (str): the working directory of the program.
+        board_size (int): Go board size.
+        batch_size (int): Mini batch size.
+        epochs (int): Maximum number of epochs to run.
     """
-    # 学習データと検証用データの分割
+    # Split training data and validation data
     data_set = sorted(glob.glob(os.path.join(program_dir, "data", "sl_data_*.npz")))
 
     train_data_set, test_data_set = split_train_test_set(data_set, 0.8)
 
-    # 学習処理を行うデバイスの設定
+    # Configure device for learning process
     device = get_torch_device(use_gpu=False)
 
     dual_net = DualNet(device=device, board_size=board_size)
@@ -125,19 +125,19 @@ def train_on_cpu(program_dir: str, board_size: int, batch_size: \
 
 def train_on_gpu(program_dir: str, board_size: int, batch_size: int, \
     epochs: int) -> NoReturn: # pylint: disable=R0914,R0915
-    """教師あり学習を実行し、学習したモデルを保存する。
+    """Perform supervised learning and save the learned model.
 
     Args:
-        program_dir (str): プログラムのワーキングディレクトリ。
-        board_size (int): 碁盤の大きさ。
-        batch_size (int): ミニバッチサイズ。
-        epochs (int): 実行する最大エポック数。
+        program_dir (str): the working directory of the program.
+        board_size (int): Go board size.
+        batch_size (int): Mini batch size.
+        epochs (int): Maximum number of epochs to run.
     """
-    # 学習データと検証用データの分割
+    # Split training data and validation data
     data_set = sorted(glob.glob(os.path.join(program_dir, "data", "sl_data_*.npz")))
     train_data_set, test_data_set = split_train_test_set(data_set, 0.8)
 
-    # 学習処理を行うデバイスの設定
+    # Configure device for learning process
     device = get_torch_device(use_gpu=True)
 
     dual_net = DualNet(device=device, board_size=board_size)
@@ -233,16 +233,16 @@ def train_on_gpu(program_dir: str, board_size: int, batch_size: int, \
 
 def train_with_gumbel_alphazero_on_cpu(program_dir: str, board_size: int, \
     batch_size: int) -> NoReturn: # pylint: disable=R0914,R0915
-    """教師あり学習を実行し、学習したモデルを保存する。CPUで実行。
+    """Perform supervised learning and save the learned model. Runs on CPU.
 
     Args:
-        program_dir (str): プログラムのワーキングディレクトリ。
-        board_size (int): 碁盤の大きさ。
-        batch_size (int): ミニバッチサイズ。
+        program_dir (str): the working directory of the program.
+        board_size (int): Go board size.
+        batch_size (int): Mini batch size.
     """
     data_set = sorted(glob.glob(os.path.join(program_dir, "data", "rl_data_*.npz")))
 
-    # 学習処理を行うデバイスの設定
+    # Configure device for learning process
     device = get_torch_device(use_gpu=False)
 
     dual_net = DualNet(device=device, board_size=board_size)
@@ -317,16 +317,16 @@ def train_with_gumbel_alphazero_on_cpu(program_dir: str, board_size: int, \
 
 def train_with_gumbel_alphazero_on_gpu(program_dir: str, board_size: int, \
     batch_size: int) -> NoReturn: # pylint: disable=R0914,R0915
-    """教師あり学習を実行し、学習したモデルを保存する。GPUで実行。
+    """Performs supervised learning and saves the trained model. Runs on GPU.
 
     Args:
-        program_dir (str): プログラムのワーキングディレクトリ。
-        board_size (int): 碁盤の大きさ。
-        batch_size (int): ミニバッチサイズ。
+        program_dir (str): the working directory of the program.
+        board_size (int): Go board size.
+        batch_size (int): Mini batch size.
     """
     data_set = sorted(glob.glob(os.path.join(program_dir, "data", "rl_data_*.npz")))
 
-    # 学習処理を行うデバイスの設定
+    # Configure device for learning process
     device = get_torch_device(use_gpu=True)
 
     dual_net = DualNet(device=device, board_size=board_size)

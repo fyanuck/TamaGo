@@ -1,4 +1,4 @@
-"""学習データの生成処理。
+"""Training data generation process.
 """
 import glob
 import os
@@ -15,14 +15,14 @@ from learning_param import BATCH_SIZE, DATA_SET_SIZE
 
 def _save_data(save_file_path: str, input_data: np.ndarray, policy_data: np.ndarray,\
     value_data: np.ndarray, kifu_counter: int) -> NoReturn:
-    """学習データをnpzファイルとして出力する。
+    """Output training data as npz file.
 
     Args:
-        save_file_path (str): 保存するファイルパス。
-        input_data (np.ndarray): 入力データ。
-        policy_data (np.ndarray): Policyのデータ。
-        value_data (np.ndarray): Valueのデータ
-        kifu_counter (int): データセットにある棋譜データの個数。
+        save_file_path (str): File path to save.
+        input_data (np.ndarray): Input data.
+        policy_data (np.ndarray): Policy data.
+        value_data (np.ndarray): Value data
+        kifu_counter (int): The number of game record data in the dataset.
     """
     save_data = {
         "input": np.array(input_data[0:DATA_SET_SIZE]),
@@ -35,12 +35,12 @@ def _save_data(save_file_path: str, input_data: np.ndarray, policy_data: np.ndar
 # pylint: disable=R0914
 def generate_supervised_learning_data(program_dir: str, kifu_dir: str, \
     board_size: int=9) -> NoReturn:
-    """教師あり学習のデータを生成して保存する。
+    """Generate and save supervised learning data.
 
     Args:
-        program_dir (str): プログラムのホームディレクトリのパス。
-        kifu_dir (str): SGFファイルを格納しているディレクトリのパス。
-        board_size (int, optional): 碁盤のサイズ. Defaults to 9.
+        program_dir (str): the path to the program's home directory.
+        kifu_dir (str): Path of the directory containing the SGF files.
+        board_size (int, optional): Go board size. Defaults to 9.
     """
     board = GoBoard(board_size=board_size)
 
@@ -64,7 +64,7 @@ def generate_supervised_learning_data(program_dir: str, kifu_dir: str, \
                 value_data.append(value_label)
             board.put_stone(pos, color)
             color = Stone.get_opponent_color(color)
-            # Valueのラベルを入れ替える。
+            # Swap the label of Value.
             value_label = 2 - value_label
 
         if len(value_data) >= DATA_SET_SIZE:
@@ -78,7 +78,7 @@ def generate_supervised_learning_data(program_dir: str, kifu_dir: str, \
 
         kifu_counter += 1
 
-    # 端数の出力
+    # output fractions
     n_batches = len(value_data) // BATCH_SIZE
     if n_batches > 0:
         _save_data(os.path.join(program_dir, "data", f"sl_data_{data_counter}"), \
@@ -88,12 +88,12 @@ def generate_supervised_learning_data(program_dir: str, kifu_dir: str, \
 
 def generate_reinforcement_learning_data(program_dir: str, kifu_dir_list: List[str], \
     board_size: int=9) -> NoReturn:
-    """強化学習で使用するデータを生成し、保存する。
+    """Generate and save data for use in reinforcement learning.
 
     Args:
-        program_dir (str): プログラムのホームディレクトリ。
-        kifu_dir_list (List[str]): 棋譜ファイルを保存しているディレクトリパスのリスト。
-        board_size (int, optional): 碁盤の大きさ。デフォルトは9。
+        program_dir (str): Home directory of the program.
+        kifu_dir_list (List[str]): List of directory paths where game record files are stored.
+        board_size (int, optional): Go board size. Default is 9.
     """
     board = GoBoard(board_size=board_size)
 
@@ -141,7 +141,7 @@ def generate_reinforcement_learning_data(program_dir: str, kifu_dir_list: List[s
 
         kifu_counter += 1
 
-    # 端数の出力
+    # output fractions
     n_batches = len(value_data) // BATCH_SIZE
     if n_batches > 0:
         _save_data(os.path.join(program_dir, "data", f"rl_data_{data_counter}"), \

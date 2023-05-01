@@ -1,19 +1,19 @@
 
-"""Residual Blockの実装。
+"""Residual Block implementation.
 """
 import torch
 from torch import nn
 
 
 class ResidualBlock(nn.Module):
-    """Residual Blockの実装クラス。
+    """Residual Block implementation class.
     """
     def __init__(self, channels: int, momentum: float=0.01):
-        """各レイヤの初期化処理。
+        """Initialization process for each layer.
 
         Args:
-            channels (int): 畳み込み層のチャネル数。
-            momentum (float, optional): バッチ正則化層のモーメンタムパラメータ. Defaults to 0.01.
+            channels (int): Number of channels in the convolutional layer.
+            momentum (float, optional): momentum parameter of the batch regularization layer. Defaults to 0.01.
         """
         super().__init__()
         self.conv1 = nn.Conv2d(in_channels=channels, out_channels=channels, \
@@ -25,13 +25,13 @@ class ResidualBlock(nn.Module):
         self.relu = nn.ReLU()
 
     def forward(self, input_plane: torch.Tensor) -> torch.Tensor:
-        """前向き伝搬処理を実行する。
+        """Perform forward propagation processing.
 
         Args:
-            input_plane (torch.Tensor): 入力テンソル。
+            input_plane (torch.Tensor): input tensor.
 
         Returns:
-            torch.Tensor: ブロックの出力テンソル。
+            torch.Tensor: the block's output tensor.
         """
         hidden_1 = self.relu(self.bn1(self.conv1(input_plane)))
         hidden_2 = self.bn2(self.conv2(hidden_1))

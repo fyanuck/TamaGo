@@ -1,9 +1,9 @@
-"""対局結果の定数。
+"""Game result constant.
 """
 from enum import Enum
 
 class MatchResult(Enum):
-    """勝敗の結果を表すクラス。
+    """ Class that represents the result of winning or losing.
     """
     DRAW = 0
     BLACK_WIN = 1
@@ -11,13 +11,13 @@ class MatchResult(Enum):
 
     @classmethod
     def get_winner_string(cls, result):
-        """対局結果を表す文字列を取得する。
+        """Gets a string representing the game result.
 
         Args:
-            result (MatchResult): 対局結果。
+            result (MatchResult): match result.
 
         Returns:
-            str: 対局結果の文字列。
+            str: String of game result.
         """
         if result == MatchResult.DRAW:
             return "Draw"

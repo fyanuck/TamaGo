@@ -1,5 +1,5 @@
 
-"""Dual Networkの実装。
+"""Dual Network implementation.
 """
 from typing import Tuple
 from torch import nn
@@ -12,14 +12,14 @@ from nn.network.head.value_head import ValueHead
 
 
 class DualNet(nn.Module): # pylint: disable=R0902
-    """Dual Networkの実装クラス。
+    """Dual Network implementation class.
     """
     def __init__(self, device: torch.device, board_size: int=BOARD_SIZE):
-        """Dual Networkの初期化処理
+        """Dual Network initialization process
 
         Args:
-            device (torch.device): 推論実行デバイス。探索での推論実行時にのみ使用し、学習中には使用しない。
-            board_size (int, optional): 碁盤のサイズ。 デフォルト値はBOARD_SIZE。
+            device (torch.device): Inference execution device. Only used during inference in exploration, not during training.
+            board_size (int, optional): Go board size. Default value is BOARD_SIZE.
         """
         super().__init__()
         filters = 64
@@ -39,13 +39,13 @@ class DualNet(nn.Module): # pylint: disable=R0902
 
 
     def forward(self, input_plane: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
-        """前向き伝搬処理を実行する。
+        """Perform forward propagation processing.
 
         Args:
-            input_plane (torch.Tensor): 入力特徴テンソル。
+            input_plane (torch.Tensor): Input feature tensor.
 
         Returns:
-            Tuple[torch.Tensor, torch.Tensor]: PolicyとValueのlogit。
+            Tuple[torch.Tensor, torch.Tensor]: logit of Policy and Value.
         """
         blocks_out = self.blocks(self.relu(self.bn_layer(self.conv_layer(input_plane))))
 
@@ -53,39 +53,40 @@ class DualNet(nn.Module): # pylint: disable=R0902
 
 
     def forward_for_sl(self, input_plane: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
-        """前向き伝搬処理を実行する。教師有り学習で利用する。
+        """Performs forward propagation, used in supervised learning.
 
         Args:
-            input_plane (torch.Tensor): 入力特徴テンソル。
+            input_plane (torch.Tensor): Input feature tensor.
 
         Returns:
-            Tuple[torch.Tensor, torch.Tensor]: Softmaxを通したPolicyと, Valueのlogit
+            Tuple[torch.Tensor, torch.Tensor]:  Policy through Softmax, logit of Value
         """
         policy, value = self.forward(input_plane)
         return self.softmax(policy), value
 
 
     def forward_with_softmax(self, input_plane: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
-        """前向き伝搬処理を実行する。
+        """Perform forward propagation processing.
 
         Args:
-            input_plane (torch.Tensor): 入力特徴テンソル。
+            input_plane (torch.Tensor): Input feature tensor.
 
         Returns:
-            Tuple[torch.Tensor, torch.Tensor]: Policy, Valueの推論結果。
+            Tuple[torch.Tensor, torch.Tensor]: Policy, Value inference result.
         """
         policy, value = self.forward(input_plane)
         return self.softmax(policy), self.softmax(value)
 
 
     def inference(self, input_plane: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
-        """前向き伝搬処理を実行する。探索用に使うメソッドのため、デバイス間データ転送も内部処理する。
+        """Performs forward propagation processing. 
+        Data transfer between devices is also internally processed because it is a method used for searching.
 
         Args:
-            input_plane (torch.Tensor): 入力特徴テンソル。
+            input_plane (torch.Tensor): Input feature tensor.
 
         Returns:
-            Tuple[torch.Tensor, torch.Tensor]: Policy, Valueの推論結果。
+            Tuple[torch.Tensor, torch.Tensor]: Policy, Value inference result.
         """
         policy, value = self.forward(input_plane.to(self.device))
         return self.softmax(policy).cpu(), self.softmax(value).cpu()
@@ -93,28 +94,28 @@ class DualNet(nn.Module): # pylint: disable=R0902
 
     def inference_with_policy_logits(self, input_plane: torch.Tensor) \
         -> Tuple[torch.Tensor, torch.Tensor]:
-        """前向き伝搬処理を実行する。Gumbel AlphaZero用の探索に使うメソッドのため、
-        デバイス間データ転送も内部処理する。
+        """Perform forward propagation. Because of the search method used for Gumbel AlphaZero,
+        Inter-device data transfer is also handled internally.
 
         Args:
-            input_plane (torch.Tensor): 入力特徴テンソル。
+            input_plane (torch.Tensor): Input feature tensor.
 
         Returns:
-            Tuple[torch.Tensor, torch.Tensor]: Policy, Valueの推論結果。
+            Tuple[torch.Tensor, torch.Tensor]: Policy, Value inference result.
         """
         policy, value = self.forward(input_plane.to(self.device))
         return policy.cpu(), self.softmax(value).cpu()
 
 
 def make_common_blocks(num_blocks: int, num_filters: int) -> torch.nn.Sequential:
-    """DualNetの共通の残差ブロックを構成して返す。
+    """Construct and return the common residual block of the DualNet.
 
     Args:
-        num_blocks (int): 積み上げる残差ブロック数。
-        num_filters (int): 残差ブロック内の畳込み層のフィルタ数。
+        num_blocks (int): Number of residual blocks to stack.
+        num_filters (int): Number of convolutional layer filters in the residual block.
 
     Returns:
-        torch.nn.Sequential: 残差ブロック列。
+        torch.nn.Sequential: residual block sequence.
     """
     blocks = [ResidualBlock(num_filters) for _ in range(num_blocks)]
     return nn.Sequential(*blocks)
