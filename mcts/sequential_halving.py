@@ -6,14 +6,14 @@ import math
 
 def get_sequence_of_considered_visits(max_num_considered_actions: int, \
     num_simulations: int) -> Tuple[int]:
-    """探索回数に対応する探索回数閾値の列を取得する。
+    """Gets the search count threshold column corresponding to the search count.
 
     Args:
-        max_num_considered_actions (int): 探索幅の最大値。
-        num_simulations (int): 1回の思考で実行する探索回数。
+        max_num_considered_actions (int): Maximum search width.
+        num_simulations (int): Number of searches to perform in one thought.
 
     Returns:
-        Tuple[int]: 探索回数閾値の列。
+        Tuple[int]: column of search count threshold.
     """
     if max_num_considered_actions <= 1:
         return tuple(range(num_simulations))
@@ -35,14 +35,14 @@ def get_sequence_of_considered_visits(max_num_considered_actions: int, \
 
 def get_candidates_and_visit_pairs(max_num_considered_actions: int, \
     num_simulations: int) -> Dict[int, int]:
-    """探索幅と探索回数のペアを取得する。
+    """Get a pair of search width and search count.
 
     Args:
-        max_num_considered_actions (int): 探索幅の最大値。
-        num_simulations (int): 1回の思考で実行する探索回数。
+        max_num_considered_actions (int): Maximum search width.
+        num_simulations (int): Number of searches to perform in one thought.
 
     Returns:
-        Dict[int, int]: 探索幅をキー、探索回数をバリューに持つ辞書。
+        Dict[int, int]: Dictionary with search width as key and search count as value.
     """
     visit_dict = {}
     visit_list = get_sequence_of_considered_visits(max_num_considered_actions, num_simulations)

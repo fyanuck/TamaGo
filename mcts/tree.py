@@ -1,4 +1,4 @@
-"""モンテカルロ木探索の実装。
+"""Monte Carlo tree search implementation.
 """
 from typing import Dict, List, NoReturn, Tuple
 import copy

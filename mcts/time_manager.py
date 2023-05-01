@@ -1,4 +1,4 @@
-"""探索時間を制御する処理。
+"""he process that controls the search time.
 """
 from enum import Enum
 from typing import NoReturn
@@ -8,7 +8,7 @@ from mcts.constant import CONST_VISITS, CONST_TIME, REMAINING_TIME, VISITS_PER_S
 
 
 class TimeControl(Enum):
-    """思考時間の管理モードを表すクラス。
+    """A class that represents the thinking time management mode.
     """
     CONSTANT_PLAYOUT = 0
     CONSTANT_TIME = 1
@@ -16,17 +16,17 @@ class TimeControl(Enum):
 
 
 class TimeManager:
-    """時間管理クラス。
+    """Time management class.
     """
     def __init__(self, mode: TimeControl, constant_visits: int=CONST_VISITS, constant_time: \
         float=CONST_TIME, remaining_time: float=REMAINING_TIME):
-        """TimeManagerクラスのコンストラクタ。
+        """Constructor for the TimeManager class.
 
         Args:
-            mode (TimeControl): 探索時間の管理モード
-            constant_visits (int, optional): 1手あたりの探索回数。デフォルト値はCONST_VISITS。
-            constant_time (float, optional): 1手あたりの探索時間。デフォルト値はCONST_TIME。
-            remaining_time (float, optional): 持ち時間。デフォルト値REMAINING_TIME。
+            mode (TimeControl): search time management mode
+            constant_visits (int, optional): Number of visits per move. The default value is CONST_VISITS.
+            constant_time (float, optional): Exploration time per move. The default value is CONST_TIME.
+            remaining_time (float, optional): Remaining time. Default value REMAINING_TIME.
         """
         self.mode = mode
         self.constant_visits = constant_visits
@@ -37,17 +37,17 @@ class TimeManager:
 
 
     def initialize(self):
-        """持ち時間の初期設定をする。
+        """Initialize time limit.
         """
         self.remaining_time = [self.default_time] * 2
 
 
     def set_search_speed(self, visits: int, time: float) -> NoReturn:
-        """探索速度を設定する。
+        """Sets the search speed.
 
         Args:
-            visits (int): 実行した探索回数。
-            time (float): 探索にかかった時間(秒)。
+            visits (int): Number of visits performed.
+            time (float): Time spent searching in seconds.
         """
         self.search_speed = visits / time if visits > 0 else VISITS_PER_SEC
 
@@ -73,11 +73,11 @@ class TimeManager:
 
 
     def set_remaining_time(self, color: Stone, time: float) -> NoReturn:
-        """残り時間を設定する。
+        """Sets the remaining time.
 
         Args:
-            color (Stone): 残り時間を設定する手番の色。
-            time (float): 設定する残り時間。
+            color (Stone): The color of the turn that sets the remaining time.
+            time (float): Remaining time to set.
         """
         if color is Stone.BLACK:
             self.remaining_time[0] = time
@@ -86,9 +86,9 @@ class TimeManager:
 
 
     def set_mode(self, mode:TimeControl) -> NoReturn:
-        """思考時間管理の設定を変更する。
+        """Change the settings for thinking time management.
 
         Args:
-            mode (TimeControl): 指定する思考モード
+            mode (TimeControl): Specified thinking mode
         """
         self.mode = mode

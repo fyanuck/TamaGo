@@ -1,4 +1,4 @@
-"""モンテカルロ木探索で使用するノードの実装。
+"""Node implementation used in Monte Carlo tree search.
 """
 from typing import Dict, NoReturn
 
@@ -15,13 +15,13 @@ MAX_ACTIONS = BOARD_SIZE ** 2 + 1
 PUCT_WEIGHT = 1.0
 
 class MCTSNode: # pylint: disable=R0902, R0904
-    """モンテカルロ木探索で使うノード情報のクラス。
+    """Class of node information used in Monte Carlo tree search.
     """
     def __init__(self, num_actions: int=MAX_ACTIONS):
         """_MCTSNodeクラスのコンストラクタ
 
         Args:
-            num_actions (int, optional): 候補手の最大数. Defaults to MAX_ACTIONS.
+            num_actions (int, optional): Maximum number of candidate moves. Defaults to MAX_ACTIONS.
         """
         self.node_visits = 0
         self.virtual_loss = 0
@@ -37,10 +37,10 @@ class MCTSNode: # pylint: disable=R0902, R0904
         self.num_children = 0
 
     def expand(self, policy: Dict[int, float]) -> NoReturn:
-        """ノードを展開し、初期化する。
+        """Expand the node and initialize it.
 
         Args:
-            policy (Dict[int, float]): 候補手に対応するPolicyのマップ。
+            policy (Dict[int, float]): A map of policies corresponding to candidate moves.
         """
         self.node_visits = 0
         self.node_value_sum = 0.0
@@ -57,10 +57,10 @@ class MCTSNode: # pylint: disable=R0902, R0904
 
 
     def set_policy(self, policy_map: Dict[int, float]) -> NoReturn:
-        """着手候補の座標とPolicyの値を設定する。
+        """Set the coordinates of the start candidate and the value of Policy.
 
         Args:
-            policy_map (Dict[int, float]): Keyが着手座標, Valueが着手のPolicy。
+            policy_map (Dict[int, float]): Key is start coordinates, Value is start policy.
         """
         index = 0
         for pos, policy in policy_map.items():
@@ -71,10 +71,10 @@ class MCTSNode: # pylint: disable=R0902, R0904
 
 
     def add_virtual_loss(self, index) -> NoReturn:
-        """Virtual Lossを加算する。
+        """Add Virtual Loss.
 
         Args:
-            index (_type_): 加算する対象の子ノードのインデックス。
+            index (_type_): The index of the child node to add.
         """
         self.virtual_loss += 1
         self.children_virtual_loss[index] += 1
@@ -84,18 +84,18 @@ class MCTSNode: # pylint: disable=R0902, R0904
         """Policyを更新する。
 
         Args:
-            policy (Dict[int, float]): 候補手と対応するPolicyのマップ。
+            policy (Dict[int, float]): A map of candidate moves and corresponding policies.
         """
         for i in range(self.num_children):
             self.children_policy[i] = policy[self.action[i]]
 
 
     def set_leaf_value(self, index: int, value: float) -> NoReturn:
-        """末端のValueを設定する。
+        """Sets the value at the end.
 
         Args:
-            index (int): Valueを設定する対象の子ノードのインデックス。
-            value (float): 設定するValueの値。
+            index (int): The index of the child node to set the Value for.
+            value (float): The value of Value to set.
 
         Returns:
             NoReturn: _description_
@@ -104,11 +104,11 @@ class MCTSNode: # pylint: disable=R0902, R0904
 
 
     def update_child_value(self, index: int, value: float) -> NoReturn:
-        """子ノードにValueを加算し、Virtual Lossを元に戻す。
+        """Adds Value to child node and restores Virtual Loss.
 
         Args:
-            index (int): 更新する対象の子ノードのインデックス。
-            value (float): 加算するValueの値。
+            index (int): The index of the child node to update.
+            value (float): Value of Value to add.
         """
         self.children_value_sum[index] += value
         self.children_visits[index] += 1
@@ -116,10 +116,10 @@ class MCTSNode: # pylint: disable=R0902, R0904
 
 
     def update_node_value(self, value: float) -> NoReturn:
-        """ノードにValueを加算し、Virtual Lossを元に戻す。
+        """Add Value to node and restore Virtual Loss.
 
         Args:
-            value (float): 加算するValueの値。
+            value (float): Value of Value to add.
         """
         self.node_value_sum += value
         self.node_visits += 1
@@ -127,10 +127,10 @@ class MCTSNode: # pylint: disable=R0902, R0904
 
 
     def select_next_action(self) -> int:
-        """PUCB値に基づいて次の着手を選択する。
+        """Select next move based on PUCB value.
 
         Returns:
-            int: 次の着手として選ぶ子ノードのインデックス。
+            int: The index of the child node to choose as the next move.
         """
         pucb_values = calculate_pucb_value(self.node_visits + self.virtual_loss, \
             self.children_visits + self.children_virtual_loss, \
@@ -140,71 +140,71 @@ class MCTSNode: # pylint: disable=R0902, R0904
 
 
     def get_num_children(self) -> int:
-        """子ノードの個数を取得する。
+        """Get the number of child nodes.
 
         Returns:
-            int: 子ノードの個数。
+            int: Number of child nodes.
         """
         return self.num_children
 
 
     def get_best_move_index(self) -> int:
-        """探索回数最大の子ノードのインデックスを取得する。
+        """Get the index of the child node with the maximum number of searches.
 
         Returns:
-            int: 探索回数最大の子ノードのインデックス。
+            int: Index of the child node with the maximum number of searches.
         """
         return np.argmax(self.children_visits[:self.num_children])
 
 
     def get_best_move(self) -> int:
-        """探索回数最大の着手を取得する。
+        """Acquire the move with the maximum number of searches.
 
         Returns:
-            int: 探索回数が最大の着手の座標。
+            int: Start coordinate with maximum number of searches.
         """
         return self.action[self.get_best_move_index()]
 
 
     def get_child_move(self, index: int) -> int:
-        """指定した子ノードに対応する着手の座標を取得する。
+        """Gets the start coordinates corresponding to the specified child node.
 
         Args:
-            index (int): 指定する子ノードのインデックス。
+            index (int): The index of the specified child node.
 
         Returns:
-            int: 着手の座標。
+            int: starting coordinates.
         """
         return self.action[index]
 
 
     def get_child_index(self, index: int) -> int:
-        """指定した子ノードの遷移先のインデックスを取得する。
+        """Gets the transition destination index of the specified child node.
 
         Args:
-            index (int): 指定する子ノードのインデックス。
+            index (int): The index of the specified child node.
 
         Returns:
-            int: 遷移先のインデックス。
+            int: Index to transition to.
         """
         return self.children_index[index]
 
 
     def set_child_index(self, index: int, child_index: int) -> NoReturn:
-        """指定した子ノードの遷移先のインデックスを設定する。
+        """Set the transition destination index of the specified child node.
 
         Args:
-            index (int): 指定した子ノードのインデックス。
-            child_index (int): 遷移先のノードのインデックス。
+            index (int): Index of the specified child node.
+            child_index (int): Index of the node to transition to.
         """
         self.children_index[index] = child_index
 
 
     def print_search_result(self, board: GoBoard) -> NoReturn:
-        """探索結果を表示する。探索した手の探索回数とValueの平均値を表示する。
+        """Displays the search result. Displays the number of searches for the searched hand and the average value of Value.
 
         Args:
-            board (GoBoard): 現在の局面情報。
+            board (GoBoard): Current position information.
         """
         value = np.divide(self.children_value_sum, self.children_visits, \
             out=np.zeros_like(self.children_value_sum), where=(self.children_visits != 0))
@@ -215,13 +215,13 @@ class MCTSNode: # pylint: disable=R0902, R0904
 
 
     def set_gumbel_noise(self) -> NoReturn:
-        """Gumbelノイズを設定する。
+        """Sets the Gumbel noise.
         """
         self.noise = np.random.gumbel(loc=0.0, scale=1.0, size=self.noise.size)
 
 
     def calculate_completed_q_value(self) -> np.array:
-        """Completed-Q valueを計算する。
+        """Calculate the Completed-Q value.
 
         Returns:
             np.array: Completed-Q value.
@@ -239,7 +239,7 @@ class MCTSNode: # pylint: disable=R0902, R0904
 
 
     def calculate_improved_policy(self) -> np.array:
-        """Improved Policyを計算する。
+        """Compute Improved Policy.
 
         Returns:
             np.array: Improved Policy.
@@ -255,13 +255,13 @@ class MCTSNode: # pylint: disable=R0902, R0904
 
 
     def select_move_by_sequential_halving_for_root(self, count_threshold: int) -> int:
-        """Gumbel AlphaZeroの探索手法を使用して次の着手を選択する。Rootのみで使用する。。
+        """Uses Gumbel AlphaZero's search method to select the next move.Used on Root only.
 
         Args:
-            count_threshold (int): 探索回数閾値。
+            count_threshold (int): Search count threshold.
 
         Returns:
-            int: 選択した子ノードのインデックス。
+            int: Index of the selected child node.
         """
         max_count = max(self.children_visits[:self.num_children])
 
@@ -280,10 +280,10 @@ class MCTSNode: # pylint: disable=R0902, R0904
 
 
     def select_move_by_sequential_halving_for_node(self) -> int:
-        """Gumbel AlphaZeroの探索手法を使用して次の着手を選択する。Root以外で使用する。。
+        """Use Gumbel AlphaZero's search method to select the next move. Used outside the root.
 
         Returns:
-            int: 選択した子ノードのインデックス。
+            int: Index of the selected child node.
         """
 
         improved_policy = self.calculate_improved_policy()
@@ -295,13 +295,13 @@ class MCTSNode: # pylint: disable=R0902, R0904
 
 
     def calculate_value_evaluation(self, index: int) -> float:
-        """指定した子ノードのValueを計算する。
+        """Calculates the value of the specified child node.
 
         Args:
-            index (int): 子ノードのインデックス。
+            index (int): index of the child node.
 
         Returns:
-            float: 指定した子ノードのValueの値。
+            float: Value of the specified child node.
         """
         if self.children_visits[index] == 0:
             return 0.5
