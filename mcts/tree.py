@@ -21,15 +21,15 @@ from mcts.time_manager import TimeManager
 
 
 class MCTSTree:
-    """モンテカルロ木探索の実装クラス。
+    """Monte Carlo tree search implementation class.
     """
     def __init__(self, network: DualNet, tree_size=65536, batch_size=NN_BATCH_SIZE):
         """MCTSTreeクラスのコンストラクタ。
 
         Args:
-            network (DualNet): 使用するニューラルネットワーク。
-            tree_size (int, optional): 木を構成するノードの最大個数。デフォルトは65536。
-            batch_size (int, optional): ニューラルネットワークの前向き伝搬処理のミニバッチサイズ。デフォルトはNN_BATCH_SIZE。
+            network (DualNet): Neural network to use.
+            tree_size (int, optional): Maximum number of nodes that make up the tree. Default is 65536.
+            batch_size (int, optional): Mini-batch size for forward propagation of neural network. Default is NN_BATCH_SIZE.
         """
         self.node = [MCTSNode() for i in range(tree_size)]
         self.num_nodes = 0
@@ -41,15 +41,15 @@ class MCTSTree:
 
 
     def search_best_move(self, board: GoBoard, color: Stone, time_manager: TimeManager) -> int:
-        """モンテカルロ木探索を実行して最善手を返す。
+        """Performs a Monte Carlo tree search and returns the best move.
 
         Args:
-            board (GoBoard): 評価する局面情報。
-            color (Stone): 評価する局面の手番の色。
+            board (GoBoard): Position information to evaluate.
+            color (Stone): The color of the turn of the position to be evaluated.
             time_manager (TimeManager):
 
         Returns:
-            int: 着手する座標。
+            int: starting coordinates.
         """
         self.num_nodes = 0
 
@@ -63,18 +63,18 @@ class MCTSTree:
 
         root = self.node[self.current_root]
 
-        # 候補手が1つしかない場合はPASSを返す
+        # Return PASS if there is only one candidate move
         if root.get_num_children() == 1:
             return PASS
 
-        # 探索を実行する
+        # run a search
         self.search(board, color, time_manager.get_num_visits_threshold(color))
 
-        # 最善手を取得する
+        # get the best move
         next_move = root.get_best_move()
         next_index = root.get_best_move_index()
 
-        # 探索結果と探索にかかった時間を表示する
+        # display search results and time taken
         root.print_search_result(board)
         search_time = time.time() - start_time
         po_per_sec = root.node_visits / search_time
@@ -92,12 +92,12 @@ class MCTSTree:
 
 
     def search(self, board: GoBoard, color: Stone, threshold: int) -> NoReturn:
-        """探索を指定回数実行する。
+        """Performs a specified number of searches.
 
         Args:
-            board (GoBoard): 現在の局面情報。
-            color (Stone): 現局面の手番の色。
-            threshold (int): この探索で実行する探索回数。
+            board (GoBoard): Current position information.
+            color (Stone): The color of the turn in the current position.
+            threshold (int): The number of searches to perform in this search.
         """
         search_board = copy.deepcopy(board)
         for _ in range(threshold):
@@ -108,30 +108,30 @@ class MCTSTree:
 
     def search_mcts(self, board: GoBoard, color: Stone, current_index: int, \
         path: List[Tuple[int, int]]) -> NoReturn:
-        """モンテカルロ木探索を実行する。
+        """Perform a Monte Carlo tree search.
 
         Args:
-            board (GoBoard): 現在の局面情報。
-            color (Stone): 現局面の手番の色。
-            current_index (int): 評価するノードのインデックス。
-            path (List[Tuple[int, int]]): ルートからcurrent_indexに対応するノードに到達するまでの経路。
+            board (GoBoard): Current position information.
+            color (Stone): The color of the turn in the current position.
+            current_index (int): Index of the node to evaluate.
+            path (List[Tuple[int, int]]): The path from the root to the node corresponding to current_index.
         """
 
-        # UCB値最大の手を求める
+        # Find the hand with the maximum UCB value
         next_index = self.node[current_index].select_next_action()
         next_move = self.node[current_index].get_child_move(next_index)
 
         path.append((current_index, next_index))
 
-        # 1手進める
+        # advance one step
         board.put_stone(pos=next_move, color=color)
         color = Stone.get_opponent_color(color)
 
-        # Virtual Lossの加算
+        # add virtual loss
         self.node[current_index].add_virtual_loss(next_index)
 
         if self.node[current_index].children_visits[next_index] < 1:
-            # ニューラルネットワークの計算
+            # Neural network computation
 
             input_plane = generate_input_planes(board, color, 0)
             next_node_index = self.node[current_index].get_child_index(next_index)
@@ -148,11 +148,11 @@ class MCTSTree:
 
 
     def expand_node(self, board: GoBoard, color: Stone) -> NoReturn:
-        """ノードを展開する。
+        """Expand the node.
 
         Args:
-            board (GoBoard): 現在の局面情報。
-            color (Stone): 現在の手番の色。
+            board (GoBoard): Current position information.
+            color (Stone): The color of the current turn.
         """
         node_index = self.num_nodes
 
@@ -170,11 +170,11 @@ class MCTSTree:
 
 
     def process_mini_batch(self, board: GoBoard, use_logit: bool=False): # pylint: disable=R0914
-        """ニューラルネットワークの入力をミニバッチ処理して、計算結果を探索結果に反映する。
+        """Mini-batch process the input of the neural network and reflect the calculation result in the search result.
 
         Args:
-            board (GoBoard): 碁盤の情報。
-            use_logit (bool): Policyの出力をlogitにするフラグ
+            board (GoBoard): Go board information.
+            use_logit (bool): Flag to logit output of policy
         """
 
         input_planes = torch.Tensor(np.array(self.batch_queue.input_plane))
@@ -233,17 +233,17 @@ class MCTSTree:
         self.process_mini_batch(board, use_logit=True)
         self.node[self.current_root].set_gumbel_noise()
 
-        # 探索を実行
+        # run search
         self.search_by_sequential_halving(board, color, \
             time_manager.get_num_visits_threshold(color))
 
-        # 最善の手を取得
+        # get the best hand
         root = self.node[self.current_root]
         next_index = root.select_move_by_sequential_halving_for_root(PLAYOUTS)
 
         #root.print_search_result(board)
 
-        # 勝率に基づいて投了するか否かを決める
+        # Decide whether to concede based on winning percentage
         value = root.calculate_value_evaluation(next_index)
 
         search_time = time.time() - start_time
@@ -261,12 +261,12 @@ class MCTSTree:
 
     def search_by_sequential_halving(self, board: GoBoard, color: Stone, \
         threshold: int) -> NoReturn:
-        """指定された探索回数だけSequential Halving探索を実行する。
+        """Performs Sequential Halving searches for the specified number of searches.
 
         Args:
-            board (GoBoard): 評価したい局面。
-            color (Stone): 評価したい局面の手番の色。
-            threshold (int): 実行する探索回数。
+            board (GoBoard): The position you want to evaluate.
+            color (Stone): The color of the turn of the position you want to evaluate.
+            threshold (int): Number of searches to perform.
         """
         search_board = copy.deepcopy(board)
 
@@ -281,7 +281,7 @@ class MCTSTree:
                     copy_board(search_board, board)
                     start_color = color
 
-                    # 探索する
+                    # Explore
                     self.search_sequential_halving(search_board, start_color, \
                         self.current_root, [], count_threshold + 1)
             self.process_mini_batch(search_board, use_logit=True)
@@ -289,14 +289,14 @@ class MCTSTree:
 
     def search_sequential_halving(self, board: GoBoard, color: Stone, current_index: int, \
         path: List[Tuple[int, int]], count_threshold: int) -> NoReturn: # pylint: disable=R0913
-        """Sequential Halving探索を実行する。
+        """Perform a Sequential Halving search.
 
         Args:
-            board (GoBoard): 現在の局面。
-            color (Stone): 現在の手番の色。
-            current_index (int): 現在のノードのインデックス。
-            path (List[Tuple[int, int]]): 現在のノードまで辿ったインデックス。
-            count_threshold (int): 評価対象とする探索回数の閾値。
+            board (GoBoard): Current position.
+            color (Stone): The color of the current turn.
+            current_index (int): Index of the current node.
+            path (List[Tuple[int, int]]): The index to traverse to the current node.
+            count_threshold (int): Threshold for the number of searches to be evaluated.
         """
         current_node = self.node[current_index]
         if current_index == self.current_root:
@@ -325,21 +325,21 @@ class MCTSTree:
             self.search_sequential_halving(board, color, next_node_index, path, count_threshold)
 
     def get_root(self) -> MCTSNode:
-        """木のルートを返す。
+        """Returns the root of the tree.
 
         Returns:
-            MCTSNode: モンテカルロ木探索で使用する木のルート。
+            MCTSNode: The root of the tree to use in Monte Carlo tree search.
         """
         return self.node[self.current_root]
 
 def get_tentative_policy(candidates: List[int]) -> Dict[int, float]:
-    """ニューラルネットワークの計算が行われるまでに使用するPolicyを取得する。
+    """Gets the policy to use until the neural network is calculated.
 
     Args:
-        candidates (List[int]): パスを含む候補手のリスト。
+        candidates (List[int]): List of candidate hands containing paths.
 
     Returns:
-        Dict[int, float]: 候補手の座標とPolicyの値のマップ。
+        Dict[int, float]: Map of candidate hand coordinates and Policy values.
     """
     score = np.random.dirichlet(alpha=np.ones(len(candidates)))
     return dict(zip(candidates, score))
