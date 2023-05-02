@@ -1,4 +1,4 @@
-"""GTPクライアントのエントリーポイント。
+"""GTP client entry point.
 """
 import os
 import click
@@ -12,45 +12,45 @@ default_model_path = os.path.join("model", "model.bin")
 
 @click.command()
 @click.option('--size', type=click.IntRange(2, BOARD_SIZE), default=BOARD_SIZE, \
-    help=f"碁盤のサイズを指定。デフォルトは{BOARD_SIZE}。")
-@click.option('--superko', type=click.BOOL, default=False, help="超劫の有効化フラグ。デフォルトはFalse。")
+    help=f"Specify the board size. Default is {BOARD_SIZE}.")
+@click.option('--superko', type=click.BOOL, default=False, help="superko enable flag. Default is False.")
 @click.option('--model', type=click.STRING, default=default_model_path, \
-    help=f"使用するニューラルネットワークのモデルパスを指定する。プログラムのホームディレクトリの相対パスで指定。\
-    デフォルトは{default_model_path}。")
+    help=f"Specify the model path of the neural network to use. Specify the path relative to the home directory of the program. \
+    Default is {default_model_path}.")
 @click.option('--use-gpu', type=click.BOOL, default=False, \
-    help="ニューラルネットワークの計算にGPUを使用するフラグ。デフォルトはFalse。")
+    help="Flag to use GPU for neural network computation. Default is False.")
 @click.option('--policy-move', type=click.BOOL, default=False, \
-    help="Policyの分布に従った着手生成処理フラグ。デフォルトはFalse。")
+    help="Start generation process flag according to Policy distribution. Default is False.")
 @click.option('--sequential-halving', type=click.BOOL, default=False, \
-    help="Gumbel AlphaZeroの探索手法で着手生成するフラグ。デフォルトはFalse。")
+    help="Flag to generate start with Gumbel AlphaZero search method. Default is False.")
 @click.option('--komi', type=click.FLOAT, default=7.0, \
-    help="コミの値の設定。デフォルトは7.0。")
+    help="Set Komi value. Default is 7.0.")
 @click.option('--visits', type=click.IntRange(min=1), default=1000, \
-    help="1手あたりの探索回数の指定。デフォルトは1000。\
-    --const-timeオプション、または--timeオプションが指定された時は無視する。")
+    help="Specify the number of searches per move. Default is 1000. \
+    Ignored when --const-time option or --time option is specified.")
 @click.option('--const-time', type=click.FLOAT, \
-    help="1手あたりの探索時間の指定。--timeオプションが指定された時は無視する。")
+    help="Specify search time per move. Ignore when --time option is specified.")
 @click.option('--time', type=click.FLOAT, \
-    help="持ち時間の指定。")
+    help="Specify time limit.")
 @click.option('--batch-size', type=click.IntRange(min=1), default=NN_BATCH_SIZE, \
-    help="探索時のミニバッチサイズ。デフォルトはNN_BATCH_SIZE。")
+    help="Mini-batch size when searching. Default is NN_BATCH_SIZE.")
 def gtp_main(size: int, superko: bool, model:str, use_gpu: bool, sequential_halving: bool, \
     policy_move: bool, komi: float, visits: int, const_time: float, time: float, \
     batch_size: int): # pylint: disable=R0913
-    """GTPクライアントの起動。
+    """Starting the GTP client.
 
     Args:
-        size (int): 碁盤の大きさ。
-        superko (bool): 超劫の有効化フラグ。
-        model (str): プログラムのホームディレクトリからのモデルファイルの相対パス。
-        use_gpu (bool):  ニューラルネットワークでのGPU使用フラグ。デフォルトはFalse。
-        policy_move (bool): Policyの分布に従った着手生成処理フラグ。デフォルトはFalse。
-        sequential_halving (bool): Gumbel AlphaZeroの探索手法で着手生成するフラグ。デフォルトはFalse。
-        komi (float): コミの値。デフォルトは7.0。
-        visits (int): 1手あたりの探索回数。デフォルトは1000。
-        const_time (float): 1手あたりの探索時間。
-        time (float): 対局時の持ち時間。
-        batch_size (int): 探索実行時のニューラルネットワークのミニバッチサイズ。デフォルトはNN_BATCH_SIZE。
+        size (int): Go board size.
+        superko (bool): superko enable flag.
+        model (str): The path of the model file relative to the program's home directory.
+        use_gpu (bool):  GPU usage flag for neural network. Default is False.
+        policy_move (bool): Move generation process flag according to policy distribution. Default is False.
+        sequential_halving (bool): Flag to generate halving in Gumbel AlphaZero's halving method. Default is False.
+        komi (float): Komi value. Default is 7.0.
+        visits (int): Number of visits per move. Default is 1000.
+        const_time (float): Exploration time per move.
+        time (float): The duration of the game.
+        batch_size (int): Neural network mini-batch size when performing search. Default is NN_BATCH_SIZE.
     """
     mode = TimeControl.CONSTANT_PLAYOUT
 

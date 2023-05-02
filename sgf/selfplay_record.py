@@ -1,4 +1,4 @@
-"""強化学習用の自己対戦データの記録と出力
+"""Recording and outputting self-match data for reinforcement learning
 """
 from typing import NoReturn
 import os
@@ -11,15 +11,15 @@ from program import PROGRAM_NAME
 
 
 class SelfPlayRecord:
-    """自己対戦のデータの記録と出力をするクラス
+    """Class for recording and outputting self-match data
     """
 
     def __init__(self, save_dir: str, coord: Coordinate):
-        """SelfPlayRecordクラスのコンストラクタ。
+        """Constructor for the SelfPlayRecord class.
 
         Args:
-            save_dir (str): 保存先のディレクトリパス。
-            coord (Coordinate): 座標変換処理クラスのインスタンス。
+            save_dir (str): Destination directory path.
+            coord (Coordinate): Instance of coordinate transformation processing class.
         """
         self.record_moves = 0
         self.color = [Stone.EMPTY] * MAX_RECORDS
@@ -30,25 +30,25 @@ class SelfPlayRecord:
         self.file_index = 1
 
     def clear(self) -> NoReturn:
-        """レコードの初期化。
+        """Record initialization.
         """
         self.record_moves = 0
 
     def set_index(self, index: int) -> NoReturn:
-        """ファイルのインデックスを設定する。
+        """Sets the file index.
 
         Args:
-            index (int): 出力ファイルのインデックス。
+            index (int): Index of the output file.
         """
         self.file_index = index
 
     def save_record(self, root: MCTSNode, pos: int, color: Stone) -> NoReturn:
-        """着手とImproved Policyを記録する。
+        """Record the launch and Improved Policy.
 
         Args:
-            root (MCTSNode): 探索実行時のルートのデータ。
-            pos (int): 着手した座標。
-            color (Stone): 手番の色。
+            root (MCTSNode): data for the root when performing exploration.
+            pos (int): starting coordinates.
+            color (Stone): The color of the turn.
         """
         self.color[self.record_moves] = color
         self.pos[self.record_moves] = self.coord.convert_to_sgf_format(pos)
@@ -65,13 +65,13 @@ class SelfPlayRecord:
         self.record_moves += 1
 
     def write_record(self, winner: Stone, komi: float, is_resign: bool, score: float) -> NoReturn:
-        """自己対戦のファイルを出力する。
+        """Output a self-play file.
 
         Args:
-            winner (Stone): 勝った手番の色。
-            komi (float): 対局実行時のコミ。
-            is_resign (bool): 投了による決着か否か。
-            score (float): 黒から見た目数。
+            winner (Stone): The color of the winning move.
+            komi (float): Komi when playing the game.
+            is_resign (bool): Whether or not the game is settled by conceding.
+            score (float): number of appearances from black.
         """
         sgf_string = f"(;FF[4]GM[1]SZ[{self.coord.board_size}]\n"
         sgf_string += f"AP[{PROGRAM_NAME}]"

@@ -1,4 +1,4 @@
-"""対局結果の補正処理。
+"""Correction processing of game results.
 """
 # -*- coding:utf-8 -*-
 from concurrent.futures import ThreadPoolExecutor
@@ -13,14 +13,14 @@ WORKER_THREAD = 4
 
 
 def get_gnugo_judgment(filename: str, is_japanese_rule: bool) -> str:
-    """GNUGoの判定結果の文字列を取得する。
+    """Gets the character string of the judgment result of GNUGo.
 
     Args:
-        filename (str): 読み込むSGFファイルパス。
-        is_japanese_rule (bool): 日本ルール化否かのフラグ。
+        filename (str): SGF file path to load.
+        is_japanese_rule (bool): Flag whether Japanese rule is applied or not.
 
     Returns:
-        str: GNUGoの判定結果の文字列。
+        str: String of GNUGo judgment result.
     """
     exec_commands = [
         f"loadsgf {filename}",

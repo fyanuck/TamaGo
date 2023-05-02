@@ -1,4 +1,4 @@
-"""SGF形式のファイル読み込み処理。
+"""SGF format file reading process.
 """
 from typing import NoReturn
 from board.coordinate import Coordinate
@@ -31,14 +31,14 @@ sgf_coord_map = {
 
 
 class SGFReader: # pylint: disable=R0902
-    """SGFファイル読み込み。
+    """Read SGF file.
     """
     def __init__(self, filename: str, board_size: int): # pylint: disable=R0912
-        """コンストラクタ
+        """constructor
 
         Args:
-            filename (str): SGFファイルパス
-            board_size (int): 碁盤の大きさ
+            filename (str): SGF file path
+            board_size (int): Go board size
         """
         self.board_size = board_size
         self.board_size_with_ob = board_size + OB_SIZE * 2
@@ -95,14 +95,14 @@ class SGFReader: # pylint: disable=R0902
                 cursor += 1
 
     def _get_size(self, sgf_text: str, cursor: int) -> int:
-        """SZタグから碁盤の大きさを読み込む。
+        """Reads the board size from the SZ tag.
 
         Args:
-            sgf_text (str): SGFテキスト。
-            cursor (int): 現在見ているカーソルの位置。
+            sgf_text (str): SGF text.
+            cursor (int): Current cursor position.
 
         Returns:
-            int: 次見るカーソルの位置。
+            int: Position of cursor to look next.
         """
         tmp_cursor = 3
 
@@ -116,14 +116,14 @@ class SGFReader: # pylint: disable=R0902
         return cursor + tmp_cursor
 
     def _get_komi(self, sgf_text: str, cursor: int) -> int:
-        """KMタグからコミの値を読み込む。
+        """Read the Komi value from the KM tag.
 
         Args:
-            sgf_text (str): SGFテキスト。
-            cursor (int): 現在見ているカーソルの位置。
+            sgf_text (str): SGF text.
+            cursor (int): Current cursor position.
 
         Returns:
-            int: 次見るカーソルの位置。
+            int: Position of cursor to look next.
         """
         tmp_cursor = 3
 
@@ -135,14 +135,14 @@ class SGFReader: # pylint: disable=R0902
         return cursor + tmp_cursor
 
     def _get_comment(self, sgf_text: str, cursor: int) -> int:
-        """Cタグからコメントを読み込む。
+        """Reads comments from C tags.
 
         Args:
-            sgf_text (str): SGFテキスト。
-            cursor (int): 現在見ているカーソルの位置。
+            sgf_text (str): SGF text.
+            cursor (int): Current cursor position.
 
         Returns:
-            int: 次見るカーソルの位置。
+            int: Position of cursor to look next.
         """
         tmp_cursor = 2
 
@@ -154,14 +154,14 @@ class SGFReader: # pylint: disable=R0902
         return cursor + tmp_cursor
 
     def _get_event(self, sgf_text: str, cursor: int) -> int:
-        """EVタグからイベント名を読み込む。
+        """Read event name from EV tag.
 
         Args:
-            sgf_text (str): SGFテキスト。
-            cursor (int): 現在見ているカーソルの位置。
+            sgf_text (str): SGF text.
+            cursor (int): Current cursor position.
 
         Returns:
-            int: 次見るカーソルの位置。
+            int: Position of cursor to look next.
         """
         tmp_cursor = 3
 
@@ -173,15 +173,15 @@ class SGFReader: # pylint: disable=R0902
         return cursor + tmp_cursor
 
     def _get_player_name(self, sgf_text: str, cursor: int, color: Stone) -> int:
-        """PBタグ、PWタグからプレイヤの名前を読み込む。
+        """Read player name from PB tag and PW tag.
 
         Args:
-            sgf_text (str): SGFテキスト。
-            cursor (int): 現在見ているカーソルの位置。
-            color (Stone): 手番の色。
+            sgf_text (str): SGF text.
+            cursor (int): Current cursor position.
+            color (Stone): The color of the turn.
 
         Returns:
-            int: 次見るカーソルの位置。
+            int: Position of cursor to look next.
         """
         tmp_cursor = 3
 
@@ -196,14 +196,14 @@ class SGFReader: # pylint: disable=R0902
         return cursor + tmp_cursor
 
     def _get_application(self, sgf_text: str, cursor: int) -> int:
-        """APタグからアプリケーション名を読み込む。
+        """Reads the application name from the AP tag.
 
         Args:
-            sgf_text (str): SGFテキスト。
-            cursor (int): 現在見ているカーソルの位置。
+            sgf_text (str): SGF text.
+            cursor (int): Current cursor position.
 
         Returns:
-            int: 次見るカーソルの位置。
+            int: Position of cursor to look next.
         """
         tmp_cursor = 3
 
@@ -215,14 +215,14 @@ class SGFReader: # pylint: disable=R0902
         return cursor + tmp_cursor
 
     def _get_copyright(self, sgf_text: str, cursor: int) -> int:
-        """CPタグからコピーライトを読み込む。
+        """Reads the copyright from the CP tag.
 
         Args:
-            sgf_text (str): SGFテキスト。
-            cursor (int): 現在見ているカーソルの位置。
+            sgf_text (str): SGF text.
+            cursor (int): Current cursor position.
 
         Returns:
-            int: 次見るカーソルの位置。
+            int: Position of cursor to look next.
         """
         tmp_cursor = 3
 
@@ -234,14 +234,14 @@ class SGFReader: # pylint: disable=R0902
         return cursor + tmp_cursor
 
     def _get_result(self, sgf_text: str, cursor: int) -> int:
-        """REタグから対局結果を読み込む。
+        """Read game result from RE tag.
 
         Args:
-            sgf_text (str): SGFテキスト。
-            cursor (int): 現在見ているカーソルの位置。
+            sgf_text (str): SGF text.
+            cursor (int): Current cursor position.
 
         Returns:
-            int: 次見るカーソルの位置。
+            int: Position of cursor to look next.
         """
         tmp_cursor = 3
 
@@ -260,15 +260,15 @@ class SGFReader: # pylint: disable=R0902
         return cursor + tmp_cursor
 
     def _get_move(self, sgf_text: str, cursor: int, color: Stone) -> int:
-        """Bタグ、Wタグから着手を読み込む。
+        """Read the start from B tag and W tag.
 
         Args:
-            sgf_text (str): SGFテキスト。
-            cursor (int): 現在見ているカーソルの位置。
-            color (Stone): 着手の色。
+            sgf_text (str): SGF text.
+            cursor (int): Current cursor position.
+            color (Stone): The starting color.
 
         Returns:
-            int: 次見るカーソルの位置。
+            int: Position of cursor to look next.
         """
         tmp_cursor = 0
         if sgf_text[cursor+2] == "]":
@@ -285,30 +285,30 @@ class SGFReader: # pylint: disable=R0902
         return cursor + tmp_cursor
 
     def get_moves(self) -> int:
-        """最初から1つずつ着手を取得する。
+        """Get started one by one from the beginning.
 
         Yields:
-            int: 着手の座標。
+            int: starting coordinates.
         """
         for i in range(self.moves):
             yield self.get_move_data(i)
 
     def get_n_moves(self) -> int:
-        """棋譜の着手数を取得する。
+        """Gets the number of moves in the game record.
 
         Returns:
-            int: 着手数
+            int: number of moves
         """
         return self.moves
 
     def get_move_data(self, index: int) -> int:
-        """指定手数の着手の座標を取得する。
+        """Get the coordinates of the move for the specified number of moves.
 
         Args:
-            index (int): 着手を取得したい手数
+            index (int): the move you want to get the coords for
 
         Returns:
-            int: 着手の座標。
+            int: starting coordinates.
         """
         if index >= self.moves:
             print_err("overrun move")
@@ -321,13 +321,13 @@ class SGFReader: # pylint: disable=R0902
         return x_coord + (OB_SIZE - 1) + (y_coord + (OB_SIZE - 1)) * self.board_size_with_ob
 
     def get_color(self, index: int) -> Stone:
-        """指定手数の手番を取得する。
+        """Get the turn of the specified number of moves.
 
         Args:
-            index (int): 着手を取得したい手数
+            index (int): the move you want to get the color for
 
         Returns:
-            Stone: 手番の色。
+            Stone: The color of the turn.
         """
         if index >= self.moves:
             print_err("overrun color")
@@ -338,10 +338,10 @@ class SGFReader: # pylint: disable=R0902
         return color
 
     def get_value_label(self) -> int:
-        """Valueの学習ラベルを取得する。
+        """Get the learning label for Value.
 
         Returns:
-            int: Valueのラベル。黒勝ちは2、白勝ちは0、持碁は1。
+            int: Value label. Black wins with 2, White wins with 0, and Go with 1.
         """
         if self.result is MatchResult.BLACK_WIN:
             return 2
@@ -353,18 +353,18 @@ class SGFReader: # pylint: disable=R0902
         return 1
 
     def get_comment(self, index: int) -> str:
-        """指定の手数のコメントを取得する。
+        """Gets the comment for the number of moves specified.
 
         Args:
-            index (int): 手数。
+            index (int): number of moves.
 
         Returns:
-            str: 指定した手数のコメント。
+            str: Comment for the specified number of moves.
         """
         return self.comment[index]
 
     def display(self) -> NoReturn:
-        """読み込んだSGFファイルの情報を表示する。（デバッグ用）
+        """Display the information of the read SGF file.(for debugging)
         """
         message = ""
         message += f"Board size   : {self.size}\n"
@@ -390,13 +390,13 @@ class SGFReader: # pylint: disable=R0902
 
 
 def _is_ignored_char(char: str) -> bool:
-    """SGFの無視する文字か否かを判定する。
+    """Determines whether the character is ignored by SGF.
 
     Args:
-        char (str): 判定対象文字。
+        char (str): The character to be judged.
 
     Returns:
-        bool: 無視する文字ならTrue、そうでなければFalse。
+        bool: True if the character should be ignored, False otherwise.
     """
     return  (char in '') or (char in '\t') or (char in '\n') or \
             (char in '\r') or (char in ';') or (char in '(') or (char in ')')
@@ -407,13 +407,13 @@ def _is_ignored_tag(text: str, cursor: int) -> bool:
         "TW[", "BR[", "WR["]
 
 def _parse_coordinate(char: str) -> int:
-    """SGF形式の座標をプログラム内部の座標に変換する。
+    """Convert coordinates in SGF format to coordinates inside the program.
 
     Args:
-        char (str): SGF形式の座標。
+        char (str): coordinates in SGF format.
 
     Returns:
-        int: プログラム内部の座標。
+        int: Coordinates inside the program.
     """
     if char in sgf_coord_map:
         return sgf_coord_map[char]
@@ -421,14 +421,14 @@ def _parse_coordinate(char: str) -> int:
     return 0
 
 def _skip_data(sgf_text: str, cursor: int) -> int:
-    """無視するタグをスキップする。
+    """Skip ignore tags.
 
     Args:
-        sgf_text (str): SGFテキスト。
-        cursor (int): 現在見ているカーソルの位置。
+        sgf_text (str): SGF text.
+        cursor (int): Current cursor position.
 
     Returns:
-        int: 次見るカーソルの位置。
+        int: Position of cursor to look next.
     """
     tmp_cursor = 2
     while sgf_text[cursor + tmp_cursor] != ']':

@@ -1,4 +1,4 @@
-"""教師あり学習のエントリーポイント。
+"""The entry point for supervised learning.
 """
 import glob
 import os
@@ -13,25 +13,25 @@ from nn.data_generator import generate_supervised_learning_data, \
 
 @click.command()
 @click.option('--kifu-dir', type=click.STRING, \
-    help="学習データの棋譜ファイルを格納したディレクトリのパス。指定がない場合はデータ生成を実行しない。")
+    help="The path of the directory where the learning data game record file is stored. If not specified, data generation will not be executed.")
 @click.option('--size', type=click.IntRange(2, BOARD_SIZE), default=BOARD_SIZE, \
-    help=f"碁盤の大きさ。最小2, 最大{BOARD_SIZE}")
+    help=f"Size of Go board. Minimum 2, maximum {BOARD_SIZE}")
 @click.option('--use-gpu', type=click.BOOL, default=True, \
-    help="学習時にGPUを使用するフラグ。指定がなければGPUを使用するものとする。")
+    help="Flag to use GPU during training. If not specified, GPU will be used.")
 @click.option('--rl', type=click.BOOL, default=False, help="")
 @click.option('--window-size', type=click.INT, default=300000, help="")
 def train_main(kifu_dir: str, size: int, use_gpu: bool, rl: bool, window_size: int): # pylint: disable=C0103
-    """教師あり学習、または強化学習のデータ生成と学習を実行する。
+    """Perform supervised learning, or reinforcement learning data generation and training.
 
     Args:
-        kifu_dir (str): 学習する棋譜ファイルを格納したディレクトリパス。
-        size (int): 碁盤の大きさ。
-        use_gpu (bool): GPU使用フラグ。
-        rl (bool): 強化学習実行フラグ。
-        window_size (int): 強化学習で使用するウィンドウサイズ。
+        kifu_dir (str): Directory path that stores game record files to learn.
+        size (int): Go board size.
+        use_gpu (bool): GPU usage flag.
+        rl (bool): Reinforcement learning execution flag.
+        window_size (int): Window size used in reinforcement learning.
     """
     program_dir = os.path.dirname(__file__)
-    # 学習データの指定がある場合はデータを生成する
+    # Generate data if training data is specified
     if kifu_dir is not None:
         if rl:
             kifu_index_list = [int(os.path.split(dir_path)[-1]) \

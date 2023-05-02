@@ -1,4 +1,4 @@
-"""自己対戦のエントリーポイント。
+"""The entry point for self-matching.
 """
 import glob
 import math
@@ -14,31 +14,31 @@ from learning_param import SELF_PLAY_VISITS, NUM_SELF_PLAY_WORKERS, \
 # pylint: disable=R0913, R0914
 @click.command()
 @click.option('--save-dir', type=click.STRING, default="archive", \
-    help="棋譜ファイルを保存するディレクトリ。デフォルトはarchive。")
+    help="Directory to save game record files. Default is archive.")
 @click.option('--process', type=click.IntRange(min=1), default=NUM_SELF_PLAY_WORKERS, \
-    help=f"自己対戦実行ワーカ数。デフォルトは{NUM_SELF_PLAY_WORKERS}。")
+    help=f"Number of self-playing workers. Default is {NUM_SELF_PLAY_WORKERS}.")
 @click.option('--num-data', type=click.IntRange(min=1), default=NUM_SELF_PLAY_GAMES, \
-    help="生成するデータ(棋譜)の数。デフォルトは10000。")
+    help="Number of data (game records) to generate. Default is 10000.")
 @click.option('--size', type=click.IntRange(2, BOARD_SIZE), default=BOARD_SIZE, \
-    help=f"碁盤のサイズ。デフォルトは{BOARD_SIZE}。")
+    help=f"Size of board. Default is {BOARD_SIZE}.")
 @click.option('--use-gpu', type=click.BOOL, default=True, \
-    help="GPU使用フラグ。デフォルトはTrue。")
+    help="GPU usage flag. Default is True.")
 @click.option('--visits', type=click.IntRange(min=2), default=SELF_PLAY_VISITS, \
-    help=f"自己対戦時の探索回数。デフォルトは{SELF_PLAY_VISITS}。")
+    help=f"Number of searches during self-match. Default is {SELF_PLAY_VISITS}.")
 @click.option('--model', type=click.STRING, default=os.path.join("model", "rl-model.bin"), \
-    help="ニューラルネットワークのモデルファイルパス。デフォルトはmodelディレクトリ内のrl-model.bin。")
+    help="Neural network model file path. Default is rl-model.bin in the model directory.")
 def selfplay_main(save_dir: str, process: int, num_data: int, size: int, \
     use_gpu: bool, visits: int, model: str):
-    """自己対戦を実行する。
+    """Perform a self-match.
 
     Args:
-        save_dir (str): 棋譜ファイルを保存するディレクトリ。デフォルトはarchive。
-        process (int): 実行する自己対戦プロセス数。デフォルトは4。
-        num_data (int): 生成するデータ数。デフォルトは10000。
-        size (int): 碁盤のサイズ。デフォルトはBOARD_SIZE。
-        use_gpu (bool): GPU使用フラグ。デフォルトはTrue
-        visits (int): 自己対戦実行時の探索回数。デフォルトはSELF_PLAY_VISITS。
-        model (str): 使用するモデルファイルのパス。デフォルトはmodel/model.bin。
+        save_dir (str): Directory to save game record files. Default is archive.
+        process (int): Number of self-playing processes to run. Default is 4.
+        num_data (int): Number of data to generate. Default is 10000.
+        size (int): Go board size. Default is BOARD_SIZE.
+        use_gpu (bool): GPU usage flag. Default is true
+        visits (int): Number of visits during self-play. Default is SELF_PLAY_VISITS.
+        model (str): the path of the model file to use. Default is model/model.bin.
     """
     file_index_list = list(range(1, num_data + 1))
     split_size = math.ceil(num_data / process)

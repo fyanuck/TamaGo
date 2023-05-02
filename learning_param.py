@@ -1,24 +1,24 @@
-"""学習用の各種ハイパーパラメータの設定。
+"""Set various hyperparameters for training.
 """
 
-# 教師あり学習実行時の学習率
+# learning rate during supervised learning
 SL_LEARNING_RATE = 0.01
 
-# 強化学習実行時の学習率
+# Learning rate when executing reinforcement learning
 RL_LEARNING_RATE = 0.01
 
-# ミニバッチサイズ
+# mini batch size
 BATCH_SIZE = 256
 
-# 学習器のモーメンタムパラメータ
+# learner momentum parameter
 MOMENTUM=0.9
 
-# L2正則化の重み
+# L2 regularization weights
 WEIGHT_DECAY = 1e-4
 
 EPOCHS = 15
 
-# 学習率を変更するエポック数と変更後の学習率
+# Number of epochs to change learning rate and learning rate after change
 LEARNING_SCHEDULE = {
     "learning_rate": {
         5: 0.001,
@@ -27,20 +27,20 @@ LEARNING_SCHEDULE = {
     }
 }
 
-# npzファイル1つに格納するデータの個数
+# Number of data to store in one npz file
 DATA_SET_SIZE = BATCH_SIZE * 4000
 
-# Policyのlossに対するValueのlossの重み比率
+# Weight ratio of loss of Value to loss of Policy
 SL_VALUE_WEIGHT = 0.02
 
-# Policyのlossに対するValueのlossの重み比率
+# Weight ratio of loss of Value to loss of Policy
 RL_VALUE_WEIGHT = 1.0
 
-# 自己対戦時の探索回数
+# Number of searches during self-play
 SELF_PLAY_VISITS = 16
 
-# 自己対戦実行ワーカ数
+# Number of self-matching workers
 NUM_SELF_PLAY_WORKERS = 4
 
-# 1回の学習ごとに生成する棋譜の数
+# Number of game records to generate per learning
 NUM_SELF_PLAY_GAMES = 10000
