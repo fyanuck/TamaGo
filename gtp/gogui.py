@@ -13,7 +13,7 @@ class GoguiAnalyzeCommand: # pylint: disable=R0903
     """Base information class for Gogui analysis commands.
     """
     def __init__(self, command_type, label, command):
-        """コンストラクタ。
+        """constructor.
 
         Args:
             command_type (_type_): _description_
@@ -28,7 +28,7 @@ class GoguiAnalyzeCommand: # pylint: disable=R0903
         """Get command information, what gogui-analyze_command displays.
 
         Returns:
-            str: コマンド情報文字列。
+            str: Command information string.
         """
         return self.type + "/" + self.label + "/" + self.command
 
@@ -74,15 +74,15 @@ def display_policy_distribution(model: DualNet, board: GoBoard, color: Stone) ->
 
 
 def display_policy_score(model: DualNet, board: GoBoard, color: Stone) -> str:
-    """Generate a string to display Policy numerically.(GoGui analysis command)
+    """Generate a string to display Policy numerically. (GoGui analysis command)
 
     Args:
-        model (DualNet): Policyを出力するニューラルネットワーク。
-        board (GoBoard): 評価する局面情報。
-        color (Stone): 評価する手番の色。
+        model (DualNet): Neural network that outputs Policy.
+        board (GoBoard): Position information to evaluate.
+        color (Stone): The color of the turn to evaluate.
 
     Returns:
-        str: 表示用文字列。
+        str: Display string.
     """
     board_size = board.get_board_size()
     input_plane = generate_input_planes(board, color)

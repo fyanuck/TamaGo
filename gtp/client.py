@@ -22,28 +22,28 @@ from sgf.reader import SGFReader
 
 
 class GtpClient: # pylint: disable=R0902,R0903
-    """_Go Text Protocolクライアントの実装クラス
+    """_Go Text Protocol client implementation class
     """
     # pylint: disable=R0913
     def __init__(self, board_size: int, superko: bool, model_file_path: str, \
         use_gpu: bool, policy_move: bool, use_sequential_halving: bool, \
         komi: float, mode: TimeControl, visits: int, const_time: float, \
         time: float, batch_size: int): # pylint: disable=R0913
-        """Go Text Protocolクライアントの初期化をする。
+        """Initialize the Go Text Protocol client.
 
         Args:
-            board_size (int): 碁盤の大きさ。
-            superko (bool): 超劫判定の有効化。
-            model_file_path (str): ネットワークパラメータファイルパス。
-            use_gpu (bool): GPU使用フラグ。
-            policy_move (bool): Policyの分布に従って着手するフラグ。
-            use_sequential_halving (bool): Gumbel AlphaZeroの探索手法で着手生成するフラグ。
-            komi (float): コミの値。
-            mode (TimeControl): 思考時間制御モード。
-            visits (int): 1手あたりの探索回数。
-            const_time (float): 1手あたりの探索時間。
-            time (float): 持ち時間。
-            batch_size (int): 探索時のニューラルネットワークのミニバッチサイズ。
+            board_size (int): Go board size.
+            superko (bool): Enable superko detection.
+            model_file_path (str): Network parameter file path.
+            use_gpu (bool): GPU usage flag.
+            policy_move (bool): Flag to move according to policy distribution.
+            use_sequential_halving (bool): Flag to generate start with Gumbel AlphaZero's halving method.
+            komi (float): Komi value.
+            mode (TimeControl): Think time control mode.
+            visits (int): Number of visits per move.
+            const_time (float): Exploration time per move.
+            time (float): time limit.
+            batch_size (int): Neural network mini-batch size when searching.
         """
         self.gtp_commands = [
             "version",
@@ -99,11 +99,11 @@ class GtpClient: # pylint: disable=R0902,R0903
 
 
     def _known_command(self, command: str) -> NoReturn:
-        """known_commandコマンドを処理する。
-        対応しているコマンドの場合は'true'を表示し、対応していないコマンドの場合は'unknown command'を表示する
+        """Process known_command commands.
+        Show 'true' for supported commands, and 'unknown command' for unsupported commands
 
         Args:
-            command (str): 対応確認をしたいGTPコマンド。
+            command (str): GTP command for which you want to check compatibility.
         """
         if command in self.gtp_commands:
             respond_success("true")
@@ -111,8 +111,8 @@ class GtpClient: # pylint: disable=R0902,R0903
             respond_failure("unknown command")
 
     def _list_commands(self) -> NoReturn:
-        """list_commandsコマンドを処理する。
-        対応している全てのコマンドを表示する。
+        """Process the list_commands command.
+        Show all supported commands.
         """
         response = ""
         for command in self.gtp_commands:
@@ -120,23 +120,23 @@ class GtpClient: # pylint: disable=R0902,R0903
         respond_success(response)
 
     def _komi(self, s_komi: str) -> NoReturn:
-        """komiコマンドを処理する。
-        入力されたコミを設定する。
+        """Handle the komi command.
+        Set the input Komi.
 
         Args:
-            s_komi (str): 設定するコミ。
+            s_komi (str): Komi to set.
         """
         komi = float(s_komi)
         self.board.set_komi(komi)
         respond_success("")
 
     def _play(self, color: str, pos: str) -> NoReturn:
-        """playコマンドを処理する。
-        入力された座標に指定された色の石を置く。
+        """Handle the play command.
+        Place a stone of the specified color at the entered coordinates.
 
         Args:
-            color (str): 手番の色。
-            pos (str): 着手する座標。
+            color (str): The turn color.
+            pos (str): starting coordinates.
         """
         if color.lower()[0] == 'b':
             play_color = Stone.BLACK
@@ -157,11 +157,11 @@ class GtpClient: # pylint: disable=R0902,R0903
         respond_success("")
 
     def _genmove(self, color: str) -> NoReturn:
-        """genmoveコマンドを処理する。
-        入力された手番で思考し、着手を生成する。
+        """Handle the genmove command.
+        Think in the entered turn and generate a move.
 
         Args:
-            color (str): 手番の色。
+            color (str): The turn color.
         """
         if color.lower()[0] == 'b':
             genmove_color = Stone.BLACK
@@ -173,20 +173,20 @@ class GtpClient: # pylint: disable=R0902,R0903
 
         if self.use_network:
             if self.policy_move:
-                # Policy Networkから着手生成
+                # Start generation from Policy Network
                 pos = generate_move_from_policy(self.network, self.board, genmove_color)
                 _, previous_move, _ = self.board.record.get(self.board.moves - 1)
                 if self.board.moves > 1 and previous_move == PASS:
                     pos = PASS
             else:
-                # モンテカルロ木探索で着手生成
+                # Start generation by Monte Carlo tree search
                 if self.use_sequential_halving:
                     pos = self.mcts.generate_move_with_sequential_halving(self.board, \
                         genmove_color, self.time_manager, False)
                 else:
                     pos = self.mcts.search_best_move(self.board, genmove_color, self.time_manager)
         else:
-            # ランダムに着手生成
+            # Random start generation
             legal_pos = [pos for pos in self.board.onboard_pos \
                 if self.board.is_legal_not_eye(pos, genmove_color)]
             if legal_pos:
@@ -200,11 +200,11 @@ class GtpClient: # pylint: disable=R0902,R0903
         respond_success(self.coordinate.convert_to_gtp_format(pos))
 
     def _boardsize(self, size: str) -> NoReturn:
-        """boardsizeコマンドを処理する。
-        指定したサイズの碁盤に設定する。
+        """Handle the boardsize command.
+        Set to Go board of specified size.
 
         Args:
-            size (str): 設定する碁盤のサイズ。
+            size (str): The board size to set.
         """
         board_size = int(size)
         self.board = GoBoard(board_size=board_size, check_superko=self.superko)
@@ -213,19 +213,19 @@ class GtpClient: # pylint: disable=R0902,R0903
         respond_success("")
 
     def _clear_board(self) -> NoReturn:
-        """clear_boardコマンドを処理する。
-        盤面を初期化する。
+        """Process the clear_board command.
+        Initialize the board.
         """
         self.board.clear()
         self.time_manager.initialize()
         respond_success("")
 
     def _time_settings(self, arg_list: List[str]) -> NoReturn:
-        """time_settingsコマンドを処理する。
-        持ち時間のみを設定する。
+        """Process the time_settings command.
+        Set only the holding time.
 
         Args:
-            arg_list (List[str]): コマンドの引数リスト（持ち時間、秒読み、秒読みの手数）。
+            arg_list (List[str]): Argument list of the command (duration, countdown, countdown count).
         """
         time = float(arg_list[0])
         self.time_manager.set_remaining_time(Stone.BLACK, time)
@@ -233,11 +233,11 @@ class GtpClient: # pylint: disable=R0902,R0903
         respond_success("")
 
     def _time_left(self, arg_list: List[str]) -> NoReturn:
-        """time_leftコマンドを処理する。
-        指定した手番の残りの時間を設定する。
+        """Process the time_left command.
+        Sets the remaining time for the specified turn.
 
         Args:
-            arg_list (List[str]): コマンドの引数リスト（手番の色、残り時間）。
+            arg_list (List[str]): Command argument list (hand color, remaining time).
         """
         if arg_list[0][0] in ['B', 'b']:
             color = Stone.BLACK
@@ -250,23 +250,23 @@ class GtpClient: # pylint: disable=R0902,R0903
         respond_success("")
 
     def _get_komi(self) -> NoReturn:
-        """get_komiコマンドを処理する。
+        """Handle the get_komi command.
         """
         respond_success(str(self.board.get_komi()))
 
     def _showboard(self) -> NoReturn:
-        """showboardコマンドを処理する。
-        現在の盤面を表示する。
+        """Process the showboard command.
+        Display the current board.
         """
         self.board.display()
         respond_success("")
 
     def _load_sgf(self, arg_list: List[str]) -> NoReturn:
-        """load_sgfコマンドを処理する。
-        指定したSGFファイルの指定手番まで進めた局面にする。
+        """Process the load_sgf command.
+        Go to the stage where you have advanced to the specified turn of the specified SGF file.
 
         Args:
-            arg_list (List[str]): コマンドの引数リスト（ファイル名（必須）、手数（任意））
+            arg_list (List[str]): Command argument list (file name (required), number (optional))
         """
         if not os.path.exists(arg_list[0]):
             respond_failure(f"cannot load {arg_list[0]}")
@@ -288,8 +288,8 @@ class GtpClient: # pylint: disable=R0902,R0903
         respond_success("")
 
     def run(self) -> NoReturn: # pylint: disable=R0912,R0915
-        """Go Text Protocolのクライアントの実行処理。
-        入力されたコマンドに対応する処理を実行し、応答メッセージを表示する。
+        """Go Text Protocol client execution process.
+        Execute the processing corresponding to the input command and display the response message.
         """
         while True:
             command = input()
@@ -371,42 +371,42 @@ class GtpClient: # pylint: disable=R0902,R0903
 
 
 def respond_success(response: str) -> NoReturn:
-    """コマンド処理成功時の応答メッセージを表示する。
+    """Displays a response message when command processing is successful.
 
     Args:
-        response (str): 表示する応答メッセージ。
+        response (str): Response message to display.
     """
     print("= " + response + '\n')
 
 def respond_failure(response: str) -> NoReturn:
-    """コマンド処理失敗時の応答メッセージを表示する。
+    """Displays a response message when command processing fails.
 
     Args:
-        response (str): 表示する応答メッセージ。
+        response (str): Response message to display.
     """
     print("= ? " + response + '\n')
 
 def _version() -> NoReturn:
-    """versionコマンドを処理する。
-    プログラムのバージョンを表示する。
+    """Handle the version command.
+    Show program version.
     """
     respond_success(VERSION)
 
 def _protocol_version() -> NoReturn:
-    """protocol_versionコマンドを処理する。
-    GTPのプロトコルバージョンを表示する。
+    """Handle the protocol_version command.
+    Print the protocol version of GTP.
     """
     respond_success(PROTOCOL_VERSION)
 
 def _name() -> NoReturn:
-    """nameコマンドを処理する。
-    プログラム名を表示する。
+    """Handle the name command.
+    Show program name.
     """
     respond_success(PROGRAM_NAME)
 
 def _quit() -> NoReturn:
-    """quitコマンドを処理する。
-    プログラムを終了する。
+    """Handle the quit command.
+    Exit the program.
     """
     respond_success("")
     sys.exit(0)
